@@ -1,98 +1,151 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
+import { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+import { getHealth } from '@/services/api';
+import type { HealthResponse } from '@/services/api';
 
 export default function HomeScreen() {
+  const [health, setHealth] = useState<HealthResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function checkApi() {
+      try {
+        const result = await getHealth();
+        setHealth(result);
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'Unable to connect to API',
+        );
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    checkApi();
+  }, []);
+
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <Text style={styles.title}>TED Education App</Text>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
+        <Text style={styles.subtitle}>
+          Thyroid Eye Disease Patient Education
+        </Text>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
+        {loading && (
+          <View style={styles.card}>
+            <ActivityIndicator size="large" />
+            <Text style={styles.message}>Connecting to API...</Text>
+          </View>
+        )}
 
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+        {health && (
+          <View style={styles.card}>
+            <Text style={styles.connected}>API Connected</Text>
+
+            <Text style={styles.label}>
+              Status:
+              <Text style={styles.value}> {health.status}</Text>
+            </Text>
+
+            <Text style={styles.label}>
+              Service:
+              <Text style={styles.value}> {health.service}</Text>
+            </Text>
+
+            <Text style={styles.label}>
+              Timestamp:
+              <Text style={styles.value}> {health.timestamp}</Text>
+            </Text>
+          </View>
+        )}
+
+        {error && (
+          <View style={styles.card}>
+            <Text style={styles.error}>API Connection Failed</Text>
+            <Text style={styles.message}>{error}</Text>
+          </View>
+        )}
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+
   container: {
     flex: 1,
     justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
     alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
+    padding: 24,
   },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
+
   title: {
+    fontSize: 30,
+    fontWeight: '700',
+    marginBottom: 8,
     textAlign: 'center',
+    color: '#1F2937',
   },
-  code: {
-    textTransform: 'uppercase',
+
+  subtitle: {
+    fontSize: 16,
+    marginBottom: 32,
+    textAlign: 'center',
+    color: '#6B7280',
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+
+  card: {
+    width: '100%',
+    maxWidth: 420,
+    padding: 24,
+    borderRadius: 16,
+    backgroundColor: '#F6F6F4',
+  },
+
+  connected: {
+    fontSize: 22,
+    fontWeight: '700',
+    marginBottom: 16,
+    color: '#2E7D32',
+  },
+
+  error: {
+    fontSize: 22,
+    fontWeight: '700',
+    marginBottom: 12,
+    color: '#B91C1C',
+  },
+
+  label: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 10,
+    color: '#374151',
+  },
+
+  value: {
+    fontWeight: '400',
+  },
+
+  message: {
+    fontSize: 16,
+    marginTop: 12,
+    color: '#4B5563',
   },
 });
