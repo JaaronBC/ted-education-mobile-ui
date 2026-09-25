@@ -18,6 +18,10 @@ export const theme = {
     warning: '#A66A00',
     error: '#B42318',
   },
+  fonts: {
+    regular: 'System',
+    heading: 'Georgia',
+  },
 
   spacing: {
     xs: 4,
