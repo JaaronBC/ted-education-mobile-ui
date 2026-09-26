@@ -1,3 +1,4 @@
+
 import { Pressable, StyleSheet, Text } from 'react-native';
 import { theme } from '@/constants/theme';
 
@@ -38,21 +39,21 @@ export default function AppButton({
 }
 
 const styles = StyleSheet.create({
-  button: {
-    minHeight: 44,
-    minWidth: 44,
-    backgroundColor: theme.colors.primaryBlue,
-    paddingVertical: theme.spacing.md,
-    paddingHorizontal: theme.spacing.lg,
-    borderRadius: theme.borderRadius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+    button: {
+        minHeight: 44,
+        minWidth: 44,
+        backgroundColor: theme.colors.primaryBlue,
+        paddingVertical: theme.spacing.md,
+        paddingHorizontal: theme.spacing.lg,
+        borderRadius: theme.borderRadius.full,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
 
   secondaryButton: {
-    backgroundColor: theme.colors.lightBlue,
+    backgroundColor: theme.colors.tanAccent,
     borderWidth: 1,
-    borderColor: theme.colors.primaryBlue,
+    borderColor: theme.colors.tanAccent,
   },
 
   disabledButton: {
@@ -60,16 +61,15 @@ const styles = StyleSheet.create({
   },
 
   text: {
-    color: theme.colors.background,
-    fontSize: theme.fontSizes.md,
-    fontWeight: theme.fontWeights.semibold,
+    ...theme.typography.button,
   },
 
   secondaryText: {
-    color: theme.colors.darkBlue,
+    color: theme.colors.background,
   },
 
   disabledText: {
     color: theme.colors.secondaryText,
   },
 });
+

@@ -1,27 +1,21 @@
+const colors = {
+  primaryBlue: '#618FA7',
+  darkBlue: '#3F6F86',
+  lightBlue: '#EAF2F5',
+  tanAccent: '#CFB990',
+  lightTan: '#F4EFE6',
+  background: '#FFFFFF',
+  surface: '#F7F8F8',
+  primaryText: '#1F2933',
+  secondaryText: '#5F6B73',
+  border: '#D8E0E4',
+  success: '#2E7D32',
+  warning: '#A66A00',
+  error: '#B42318',
+} as const;
+
 export const theme = {
-  colors: {
-    primaryBlue: '#618FA7',
-    darkBlue: '#3F6F86',
-    lightBlue: '#EAF2F5',
-
-    tanAccent: '#CFB990',
-    lightTan: '#F4EFE6',
-
-    background: '#FFFFFF',
-    surface: '#F7F8F8',
-
-    primaryText: '#1F2933',
-    secondaryText: '#5F6B73',
-    border: '#D8E0E4',
-
-    success: '#2E7D32',
-    warning: '#A66A00',
-    error: '#B42318',
-  },
-  fonts: {
-    regular: 'System',
-    heading: 'Georgia',
-  },
+  colors,
 
   spacing: {
     xs: 4,
@@ -33,27 +27,70 @@ export const theme = {
   },
 
   borderRadius: {
-    sm: 4,
-    md: 8,
-    lg: 12,
-    xl: 16,
+    sm: 8,
+    md: 12,
+    lg: 16,
+    xl: 20,
     full: 9999,
   },
+  //Typography system to keep consistent text styles across the app
+  //Title Text Styles
+  typography: {
+    title: {
+      fontFamily: 'Georgia',
+      fontSize: 32,
+      fontWeight: '600',
+      color: colors.darkBlue,
+    },
 
-  fontSizes: {
-    xs: 12,
-    sm: 14,
-    md: 16,
-    lg: 18,
-    xl: 24,
-    xxl: 32,
-  },
+    subtitle: {
+      fontFamily: 'Georgia',
+      fontSize: 18,
+      fontWeight: '400',
+      color: colors.primaryBlue,
+    },
+    //Heading Text Styles for headings and App Card text
+    heading: {
+      fontFamily: 'Georgia',
+      fontSize: 20,
+      fontWeight: '700',
+      color: colors.darkBlue,
+    },
 
-  fontWeights: {
-    regular: '400',
-    medium: '500',
-    semibold: '600',
-    bold: '700',
+    subheading: {
+      fontFamily: 'Georgia',
+      fontSize: 16,
+      fontWeight: '400',
+      color: colors.primaryBlue,
+    },
+    //Body Text Styles
+    body: {
+      fontFamily: 'Georgia',
+      fontSize: 16,
+      fontWeight: '400',
+      color: colors.primaryText,
+    },
+
+    bodyMedium: {
+      fontFamily: 'Georgia',
+      fontSize: 16,
+      fontWeight: '500',
+      color: colors.primaryText,
+    },
+
+    caption: {
+      fontFamily: 'Georgia',
+      fontSize: 12,
+      fontWeight: '400',
+      color: colors.secondaryText,
+    },
+    //Button text style
+    button: {
+      fontFamily: 'Georgia',
+      fontSize: 20,
+      fontWeight: '600',
+      color: colors.background,
+    },
   },
 
   layout: {
