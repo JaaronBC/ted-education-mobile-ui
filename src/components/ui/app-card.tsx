@@ -21,5 +21,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: theme.colors.border,
     borderRadius: theme.borderRadius.xl,
+    marginBottom: theme.spacing.sm,
   },
 });

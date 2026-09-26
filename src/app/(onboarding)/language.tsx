@@ -14,15 +14,15 @@ export default function LanguageScreen() {
           You can change this later in Settings.
         </Text>
 
-        <AppCard style={styles.card}>
+        <AppCard>
           <Text style={styles.cardTitle}>English</Text>
         </AppCard>
 
-        <AppCard style={styles.card}>
+        <AppCard>
           <Text style={styles.cardTitle}>Español</Text>
         </AppCard>
 
-        <AppCard style={styles.card}>
+        <AppCard>
           <Text style={styles.cardTitle}>日本語</Text>
         </AppCard>
 
@@ -73,9 +73,5 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginTop: theme.spacing.xl,
     paddingVertical: theme.spacing.lg,
-  },
-
-  card: {
-    marginBottom: theme.spacing.sm,
   },
 });
