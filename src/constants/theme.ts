@@ -70,14 +70,6 @@ export const theme = {
       fontWeight: '400',
       color: colors.primaryText,
     },
-
-    bodyMedium: {
-      fontFamily: 'Georgia',
-      fontSize: 16,
-      fontWeight: '500',
-      color: colors.primaryText,
-    },
-
     caption: {
       fontFamily: 'Georgia',
       fontSize: 12,

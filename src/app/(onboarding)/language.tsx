@@ -30,7 +30,7 @@ export default function LanguageScreen() {
           <AppButton
             title="Continue"
             variant= "secondary"
-            onPress={() => console.log('Continue pressed')}
+            onPress={() => console.log('test')}
           />
         </View>
       </View>
