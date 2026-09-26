@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react';
-import { StyleSheet, View, type ViewProps } from 'react-native';
-import { theme } from '@/constants/theme';
+import type { ReactNode } from "react";
+import { StyleSheet, View, type ViewProps } from "react-native";
+import { theme } from "@/constants/theme";
 
 type AppCardProps = ViewProps & {
   children: ReactNode;

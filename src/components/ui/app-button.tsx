@@ -1,17 +1,16 @@
-
-import { Pressable, StyleSheet, Text } from 'react-native';
-import { theme } from '@/constants/theme';
+import { Pressable, StyleSheet, Text } from "react-native";
+import { theme } from "@/constants/theme";
 
 type AppButtonProps = {
   title: string;
-  variant?: 'primary' | 'secondary';
+  variant?: "primary" | "secondary";
   disabled?: boolean;
   onPress?: () => void;
 };
 
 export default function AppButton({
   title,
-  variant = 'primary',
+  variant = "primary",
   disabled = false,
   onPress,
 }: AppButtonProps) {
@@ -21,14 +20,14 @@ export default function AppButton({
       disabled={disabled}
       style={[
         styles.button,
-        variant === 'secondary' && styles.secondaryButton,
+        variant === "secondary" && styles.secondaryButton,
         disabled && styles.disabledButton,
       ]}
     >
       <Text
         style={[
           styles.text,
-          variant === 'secondary' && styles.secondaryText,
+          variant === "secondary" && styles.secondaryText,
           disabled && styles.disabledText,
         ]}
       >
@@ -39,16 +38,16 @@ export default function AppButton({
 }
 
 const styles = StyleSheet.create({
-    button: {
-        minHeight: 44,
-        minWidth: 44,
-        backgroundColor: theme.colors.primaryBlue,
-        paddingVertical: theme.spacing.md,
-        paddingHorizontal: theme.spacing.lg,
-        borderRadius: theme.borderRadius.full,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
+  button: {
+    minHeight: 44,
+    minWidth: 44,
+    backgroundColor: theme.colors.primaryBlue,
+    paddingVertical: theme.spacing.md,
+    paddingHorizontal: theme.spacing.lg,
+    borderRadius: theme.borderRadius.full,
+    alignItems: "center",
+    justifyContent: "center",
+  },
 
   secondaryButton: {
     backgroundColor: theme.colors.tanAccent,
@@ -72,4 +71,3 @@ const styles = StyleSheet.create({
     color: theme.colors.secondaryText,
   },
 });
-

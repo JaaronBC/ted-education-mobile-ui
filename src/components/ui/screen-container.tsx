@@ -1,6 +1,6 @@
-import { StyleSheet, View, type ViewProps } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { theme } from '@/constants/theme';
+import { StyleSheet, View, type ViewProps } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { theme } from "@/constants/theme";
 
 type ScreenContainerProps = ViewProps;
 
@@ -26,9 +26,9 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    width: '100%',
+    width: "100%",
     maxWidth: theme.layout.maxContentWidth,
-    alignSelf: 'center',
+    alignSelf: "center",
     paddingHorizontal: theme.layout.screenPadding,
   },
 });

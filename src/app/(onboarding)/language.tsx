@@ -1,8 +1,8 @@
-import { Text, View, StyleSheet } from 'react-native';
-import AppButton from '@/components/ui/app-button';
-import AppCard from '@/components/ui/app-card';
-import ScreenContainer from '@/components/ui/screen-container';
-import { theme } from '@/constants/theme';
+import { Text, View, StyleSheet } from "react-native";
+import AppButton from "@/components/ui/app-button";
+import AppCard from "@/components/ui/app-card";
+import ScreenContainer from "@/components/ui/screen-container";
+import { theme } from "@/constants/theme";
 
 export default function LanguageScreen() {
   return (
@@ -29,8 +29,9 @@ export default function LanguageScreen() {
         <View style={styles.buttonContainer}>
           <AppButton
             title="Continue"
-            variant= "secondary"
-            onPress={() => console.log('test')}
+            variant="secondary"
+
+            onPress={() => console.log("test")}
           />
         </View>
       </View>
@@ -48,14 +49,16 @@ const styles = StyleSheet.create({
     marginTop: theme.spacing.xxl,
     ...theme.typography.title,
     marginBottom: theme.spacing.sm,
-    textAlign: 'center',
+
+    textAlign: "center",
   },
 
   subtitle: {
     ...theme.typography.subtitle,
     marginBottom: theme.spacing.lg,
     lineHeight: 24,
-    textAlign: 'center',
+
+    textAlign: "center",
   },
 
   cardTitle: {
@@ -76,4 +79,3 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.sm,
   },
 });
-;
