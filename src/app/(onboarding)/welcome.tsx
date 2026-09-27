@@ -17,7 +17,6 @@ export default function WelcomeScreen() {
   return (
     <View className="flex-1 bg-[#DDEBF3]">
       <StatusBar style="dark" />
-
       <View className="flex-1 items-center">
         <View className="w-full max-w-[430px] flex-1 overflow-hidden bg-[#EAF3F8]">
           <SafeAreaView className="flex-1">
