@@ -53,100 +53,134 @@ export default function LanguageScreen() {
           <Pressable
                   accessibilityRole="button"
                   accessibilityLabel="English"
-                  onPress={() => setSelectedLanguage('en')}
+                  onPress={() => {
+                    if (selectedLanguage === 'en') { 
+                      setSelectedLanguage(null)
+                    }else{
+                      setSelectedLanguage('en')
+                    }}}               
                   className="mt-8 h-[60px] w-[100%] flex-row items-center justify-center rounded-xl bg-[white] active:opacity-80 border-2 border-gray-400"
                   style={{
                     backgroundColor: selectedLanguage === 'en' ? '#618FA7' : 'white',
                   }}>
-                      
-                  <Text className="text-[30px] font-light text-white"                  
-                    style={{
-                      fontFamily: 'Georgia',
-                      fontWeight: '300',
-                      color: '#0d0e0e',
-                    }}>
-                    English
-                  </Text>
-            </Pressable>      
+                  <View className="w-full flex-row items-center justify-between px-4">
+                    <Text className="text-[30px] font-light text-white"
+                      style={{
+                        fontFamily: 'Georgia',
+                        fontWeight: '300',
+                        color: '#0d0e0e',
+                      }}>
+                      English
+                    </Text>
+                  </View>
+            </Pressable>
 
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Get Started"
-              onPress={() => setSelectedLanguage('zh')}
+                  onPress={() => {
+                    if (selectedLanguage === 'zh') { 
+                      setSelectedLanguage(null)
+                    }else{
+                      setSelectedLanguage('zh')
+                    }}} 
                 className="mt-2 h-[60px] w-[100%] flex-row items-center justify-center rounded-xl bg-[white] active:opacity-80 border-2 border-gray-400"
                   style={{
                     backgroundColor: selectedLanguage === 'zh' ? '#618FA7' : 'white',
                   }}>
-                  <Text className="text-[30px] font-light text-white"                  
-                    style={{
-                      fontFamily: 'Georgia',
-                      fontWeight: '300',
-                      color: '#0d0e0e',
-                    }}>
-                    中文
-                  </Text>
+                  <View className="w-full flex-row items-center justify-between px-4">
+                    <Text className="text-[30px] font-light text-white"
+                      style={{
+                        fontFamily: 'Georgia',
+                        fontWeight: '300',
+                        color: '#0d0e0e',
+                      }}>
+                      中文
+                    </Text>
+                  </View>
             </Pressable>
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Get Started"
-              onPress={() => setSelectedLanguage('jp')}
+              onPress={() => {
+                if (selectedLanguage === 'jp') { 
+                  setSelectedLanguage(null)
+                }else{
+                  setSelectedLanguage('jp')
+                }}} 
                 className="mt-2 h-[60px] w-[100%] flex-row items-center justify-center rounded-xl bg-[white] active:opacity-80 border-2 border-gray-400"
                   style={{
                     backgroundColor: selectedLanguage === 'jp' ? '#618FA7' : 'white',
                   }}>
-                  <Text className="text-[30px] font-light text-white"                  
-                    style={{
-                      fontFamily: 'Georgia',
-                      fontWeight: '300',
-                      color: '#0d0e0e',
-                    }}>
-                    日本語
-                  </Text>
+                  <View className="w-full flex-row items-center justify-between px-4">
+                    <Text className="text-[30px] font-light text-white"
+                      style={{
+                        fontFamily: 'Georgia',
+                        fontWeight: '300',
+                        color: '#0d0e0e',
+                      }}>
+                      日本語
+                    </Text>
+                  </View>
             </Pressable>
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Get Started"
-              onPress={() => setSelectedLanguage('kr')}
+              onPress={() => {
+                if (selectedLanguage === 'kr') { 
+                  setSelectedLanguage(null)
+                }else{
+                  setSelectedLanguage('kr')
+                }}} 
                 className="mt-2 h-[60px] w-[100%] flex-row items-center justify-center rounded-xl bg-[white] active:opacity-80 border-2 border-gray-400"
                   style={{
                     backgroundColor: selectedLanguage === 'kr' ? '#618FA7' : 'white',
                   }}>
-                  <Text className="text-[30px] font-light text-white"                  
-                    style={{
-                      fontFamily: 'Georgia',
-                      fontWeight: '300',
-                      color: '#0d0e0e',
-                    }}>
-                    한국어
-                  </Text>
+                  <View className="w-full flex-row items-center justify-between px-4">
+                    <Text className="text-[30px] font-light text-white"
+                      style={{
+                        fontFamily: 'Georgia',
+                        fontWeight: '300',
+                        color: '#0d0e0e',
+                      }}>
+                      한국어
+                    </Text>
+                  </View>
             </Pressable>
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Get Started"
-              onPress={() => setSelectedLanguage('es')}
+              onPress={() => {
+                if (selectedLanguage === 'es') { 
+                  setSelectedLanguage(null)
+                }else{
+                  setSelectedLanguage('es')
+                }}} 
                 className="mt-2 h-[60px] w-[100%] flex-row items-center justify-center rounded-xl bg-[white] active:opacity-80 border-2 border-gray-400"
                   style={{
                     backgroundColor: selectedLanguage === 'es' ? '#618FA7' : 'white',
                   }}>
-                  <Text className="text-[30px] font-light text-white"                  
-                    style={{
-                      fontFamily: 'Georgia',
-                      fontWeight: '300',
-                      color: '#0d0e0e',
-                    }}>
-                    Español
-                  </Text>
+                  <View className="w-full flex-row items-center justify-between px-4">
+                    <Text className="text-[30px] font-light text-white"
+                      style={{
+                        fontFamily: 'Georgia',
+                        fontWeight: '300',
+                        color: '#0d0e0e',
+                      }}>
+                      Español
+                    </Text>
+                  </View>
             </Pressable>
             <Pressable
-                  onPress={() => router.push('/home')}
+                  onPress={() => {if (selectedLanguage) { router.push('/home');}}}
                   accessibilityRole="button"
                   accessibilityLabel="Continue"
-                  className="mt-12 h-[60px] w-[100%] flex-row items-center justify-center rounded-full bg-[#d5ba8c] active:opacity-80"
+                  className="mt-12 h-[60px] w-[100%] flex-row items-center justify-center rounded-full bg-[#CFB990] active:opacity-80"
                 >
                   <Text className="text-[20px] font-semibold text-white">
                     Continue
                   </Text>
-              </Pressable>
+            </Pressable>
             </View>
         </SafeAreaView>
         </View>
