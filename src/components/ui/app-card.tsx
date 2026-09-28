@@ -1,16 +1,17 @@
 import type { ReactNode } from "react";
-import { StyleSheet, View, type ViewProps } from "react-native";
+import { Pressable, StyleSheet, type PressableProps } from "react-native";
 import { theme } from "@/constants/theme";
 
-type AppCardProps = ViewProps & {
+type AppCardProps = {
   children: ReactNode;
+  onPress?: () => void;
 };
 
-export default function AppCard({ children, style, ...props }: AppCardProps) {
+export default function AppCard({ children, onPress }: AppCardProps) {
   return (
-    <View style={[styles.card, style]} {...props}>
+    <Pressable onPress={onPress} style={styles.card}>
       {children}
-    </View>
+    </Pressable>
   );
 }
 
