@@ -2,39 +2,42 @@ import { Text, View, StyleSheet } from "react-native";
 import AppButton from "@/components/ui/app-button";
 import AppCard from "@/components/ui/app-card";
 import ScreenContainer from "@/components/ui/screen-container";
-import { router } from "expo-router";
 import { theme } from "@/constants/theme";
 
-export default function LanguageScreen() {
+export default function HomeScreen() {
   return (
     <ScreenContainer>
       <View style={styles.content}>
-        <Text style={styles.title}>Choose Your Language</Text>
+        <Text style={styles.title}>Welcome</Text>
 
         <Text style={styles.subtitle}>
-          You can change this later in Settings.
+          Learn. Track. Organize. Understand. Take control of your eye health
         </Text>
 
         <AppCard style={styles.card}>
-          <Text style={styles.cardTitle}>English</Text>
+          <Text style={styles.cardTitle}>Learn</Text>
+          <Text style={styles.cardSubtitle}>Education & Resources</Text>
         </AppCard>
 
         <AppCard style={styles.card}>
-          <Text style={styles.cardTitle}>Español</Text>
+          <Text style={styles.cardTitle}>Track</Text>
+          <Text style={styles.cardSubtitle}>Symptoms, CAS & Photos</Text>
         </AppCard>
 
         <AppCard style={styles.card}>
-          <Text style={styles.cardTitle}>日本語</Text>
+          <Text style={styles.cardTitle}>My Health</Text>
+          <Text style={styles.cardSubtitle}>Labs, imaging & Records</Text>
         </AppCard>
 
-        <View style={styles.buttonContainer}>
-          <AppButton
-            title="Continue"
-            variant="secondary"
+        <AppCard style={styles.card}>
+          <Text style={styles.cardTitle}>Treatment</Text>
+          <Text style={styles.cardSubtitle}>Options & Guidance</Text>
+        </AppCard>
 
-            onPress={() => router.push("/home")}
-          />
-        </View>
+        <AppCard style={styles.card}>
+          <Text style={styles.cardTitle}>Share With My Doctor</Text>
+          <Text style={styles.cardSubtitle}>Export Your Summary</Text>
+        </AppCard>
       </View>
     </ScreenContainer>
   );
@@ -43,23 +46,17 @@ export default function LanguageScreen() {
 const styles = StyleSheet.create({
   content: {
     flex: 1,
-    paddingTop: theme.spacing.xxl,
   },
 
   title: {
-    marginTop: theme.spacing.xxl,
     ...theme.typography.title,
     marginBottom: theme.spacing.sm,
-
-    textAlign: "center",
   },
 
   subtitle: {
     ...theme.typography.subtitle,
     marginBottom: theme.spacing.lg,
     lineHeight: 24,
-
-    textAlign: "center",
   },
 
   cardTitle: {
