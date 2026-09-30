@@ -1,15 +1,27 @@
 import type { ReactNode } from "react";
-import { Pressable, StyleSheet, type PressableProps } from "react-native";
+import {
+  Pressable,
+  StyleSheet,
+  type PressableProps,
+  type PressableStateCallbackType,
+} from "react-native";
 import { theme } from "@/constants/theme";
 
-type AppCardProps = {
+type AppCardProps = PressableProps & {
   children: ReactNode;
-  onPress?: () => void;
 };
 
-export default function AppCard({ children, onPress }: AppCardProps) {
+export default function AppCard({ children, style, ...props }: AppCardProps) {
+  const pressableStyle =
+    typeof style === "function"
+      ? (state: PressableStateCallbackType) => [
+          styles.card,
+          style(state) as any,
+        ]
+      : [styles.card, style];
+
   return (
-    <Pressable onPress={onPress} style={styles.card}>
+    <Pressable {...props} style={pressableStyle}>
       {children}
     </Pressable>
   );
