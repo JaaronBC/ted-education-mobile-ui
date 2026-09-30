@@ -1,16 +1,29 @@
 import type { ReactNode } from "react";
-import { StyleSheet, View, type ViewProps } from "react-native";
+import {
+  Pressable,
+  StyleSheet,
+  type PressableProps,
+  type PressableStateCallbackType,
+} from "react-native";
 import { theme } from "@/constants/theme";
 
-type AppCardProps = ViewProps & {
+type AppCardProps = PressableProps & {
   children: ReactNode;
 };
 
 export default function AppCard({ children, style, ...props }: AppCardProps) {
+  const pressableStyle =
+    typeof style === "function"
+      ? (state: PressableStateCallbackType) => [
+          styles.card,
+          style(state) as any,
+        ]
+      : [styles.card, style];
+
   return (
-    <View style={[styles.card, style]} {...props}>
+    <Pressable {...props} style={pressableStyle}>
       {children}
-    </View>
+    </Pressable>
   );
 }
 
@@ -21,5 +34,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: theme.colors.border,
     borderRadius: theme.borderRadius.xl,
+    marginBottom: theme.spacing.sm,
   },
 });

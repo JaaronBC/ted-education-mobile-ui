@@ -10,23 +10,28 @@ export default function LanguageScreen() {
     <ScreenContainer>
       <View style={styles.content}>
         <Text style={styles.title}>Choose Your Language</Text>
-
         <Text style={styles.subtitle}>
           You can change this later in Settings.
         </Text>
 
-        <AppCard style={styles.card}>
+        <AppCard
+          style={styles.card}
+          onPress={() => console.log("English selected")}
+        >
           <Text style={styles.cardTitle}>English</Text>
         </AppCard>
-
-        <AppCard style={styles.card}>
+        <AppCard
+          style={styles.card}
+          onPress={() => console.log("Español selected")}
+        >
           <Text style={styles.cardTitle}>Español</Text>
         </AppCard>
-
-        <AppCard style={styles.card}>
+        <AppCard
+          style={styles.card}
+          onPress={() => console.log("日本語 selected")}
+        >
           <Text style={styles.cardTitle}>日本語</Text>
         </AppCard>
-
         <View style={styles.buttonContainer}>
           <AppButton
             title="Continue"

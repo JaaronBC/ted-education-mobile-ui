@@ -1,5 +1,4 @@
 import { Text, View, StyleSheet } from "react-native";
-import AppButton from "@/components/ui/app-button";
 import AppCard from "@/components/ui/app-card";
 import ScreenContainer from "@/components/ui/screen-container";
 import { theme } from "@/constants/theme";
@@ -14,27 +13,42 @@ export default function HomeScreen() {
           Learn. Track. Organize. Understand. Take control of your eye health
         </Text>
 
-        <AppCard style={styles.card}>
+        <AppCard
+          style={styles.card}
+          onPress={() => console.log("Learn selected")}
+        >
           <Text style={styles.cardTitle}>Learn</Text>
           <Text style={styles.cardSubtitle}>Education & Resources</Text>
         </AppCard>
 
-        <AppCard style={styles.card}>
+        <AppCard
+          style={styles.card}
+          onPress={() => console.log("Track selected")}
+        >
           <Text style={styles.cardTitle}>Track</Text>
           <Text style={styles.cardSubtitle}>Symptoms, CAS & Photos</Text>
         </AppCard>
 
-        <AppCard style={styles.card}>
+        <AppCard
+          style={styles.card}
+          onPress={() => console.log("My Health selected")}
+        >
           <Text style={styles.cardTitle}>My Health</Text>
           <Text style={styles.cardSubtitle}>Labs, imaging & Records</Text>
         </AppCard>
 
-        <AppCard style={styles.card}>
+        <AppCard
+          style={styles.card}
+          onPress={() => console.log("Treatment selected")}
+        >
           <Text style={styles.cardTitle}>Treatment</Text>
           <Text style={styles.cardSubtitle}>Options & Guidance</Text>
         </AppCard>
 
-        <AppCard style={styles.card}>
+        <AppCard
+          style={styles.card}
+          onPress={() => console.log("Share With My Doctor selected")}
+        >
           <Text style={styles.cardTitle}>Share With My Doctor</Text>
           <Text style={styles.cardSubtitle}>Export Your Summary</Text>
         </AppCard>
