@@ -21,6 +21,8 @@ export default function AppButton({
     <Pressable
       onPress={onPress}
       disabled={disabled}
+      accessibilityRole="button"
+      accessibilityState={{ disabled }}
       style={[
         styles.button,
         variant === "secondary" && styles.secondaryButton,
