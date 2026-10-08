@@ -11,13 +11,14 @@ export default function ScreenContainer({
   style,
   scrollable = false,
   ...props
-  // Makes screen scrollable if scrollable prop is true, otherwise just a regular view
+  // makes screen scrollable if scrollable prop is true, otherwise just a view
 }: ScreenContainerProps) {
   return (
     <SafeAreaView style={styles.safeArea}>
       {scrollable ? (
         <ScrollView
-          contentContainerStyle={[styles.container, style]}
+          style={styles.scrollView}
+          contentContainerStyle={[styles.scrollContainer, style]}
           {...props}
         >
           {children}
@@ -37,8 +38,20 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
   },
 
+  // Non-scrollable container styles
   container: {
     flex: 1,
+    width: "100%",
+    maxWidth: theme.layout.maxContentWidth,
+    alignSelf: "center",
+    paddingHorizontal: theme.layout.screenPadding,
+  },
+  // Scrollable container styles
+  scrollView: {
+    flex: 1,
+  },
+
+  scrollContainer: {
     width: "100%",
     maxWidth: theme.layout.maxContentWidth,
     alignSelf: "center",
