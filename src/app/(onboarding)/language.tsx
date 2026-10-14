@@ -200,7 +200,7 @@ export default function LanguageScreen() {
                 </View>
               </Pressable>
               <Pressable
-                onPress={() => {if (selectedLanguage) { router.push('/home');}}}
+                onPress={() => {if (selectedLanguage) { router.replace('/(tabs)/home');}}}
                 accessibilityRole="button"
                 accessibilityLabel="Continue"
                 className="mt-12 h-[60px] w-[100%] flex-row items-center justify-center rounded-full bg-[#CFB990] active:opacity-80"
