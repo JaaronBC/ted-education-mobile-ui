@@ -1,85 +1,99 @@
-import { Text, View, StyleSheet, ScrollView, Pressable } from "react-native";
-import AppButton from "@/components/ui/app-button";
-import { router, type Href } from "expo-router";
-import AppCard from "@/components/ui/app-card";
+import { StyleSheet, ScrollView } from "react-native";
 import ScreenContainer from "@/components/ui/screen-container";
+import SectionHeader from "@/components/ui/section-header";
+import HealthCategoryCard from "@/components/health/health-category-card";
+import HealthSummaryCard from "@/components/health/health-summary-card";
+import type { HealthSummaryData } from "@/constants/health/health-summaries";
+import { type Href } from "expo-router";
+import type { LucideIcon } from "lucide-react-native";
+import { dummyHealthDashboard } from "@/mockdata/health-dashboard-data";
 import { theme } from "@/constants/theme";
+import {
+  FlaskConical,
+  Scan,
+  Pill,
+  ClipboardList,
+  FileText,
+} from "lucide-react-native";
 
-const healthSections: {
+const healthCategories: {
   title: string;
+  description: string;
+  icon: LucideIcon;
   route: Href;
+  summary?: HealthSummaryData;
 }[] = [
-  { title: "Labs", route: "/health/labs" },
-  { title: "Imaging", route: "/health/imaging" },
-  { title: "Medications", route: "/health/medications" },
-  { title: "Treatments", route: "/health/treatments" },
-  { title: "Records", route: "/health/records" },
+  {
+    title: "Labs",
+    description: "Review your laboratory results",
+    icon: FlaskConical,
+    route: "/health/labs",
+    summary: dummyHealthDashboard.labs,
+  },
+  {
+    title: "Imaging",
+    description: "View your imaging reports",
+    icon: Scan,
+    route: "/health/imaging",
+    summary: dummyHealthDashboard.imaging,
+  },
+  {
+    title: "Medications",
+    description: "Review your medications",
+    icon: Pill,
+    route: "/health/medications",
+    summary: dummyHealthDashboard.medications,
+  },
+  {
+    title: "Treatment History",
+    description: "Review previous and ongoing treatments.",
+    icon: ClipboardList,
+    route: "/health/treatments",
+    summary: dummyHealthDashboard.treatments,
+  },
+  {
+    title: "Medical Records",
+    description: "Access your medical documents",
+    icon: FileText,
+    route: "/health/records",
+    summary: dummyHealthDashboard.records,
+  },
 ];
 
 export default function HealthScreen() {
+  // Using the dummyHealthDashboard data to populate the summary cards
+  const summary = dummyHealthDashboard;
+
   return (
     <ScreenContainer>
-      <View style={styles.content}>
-        <Text style={styles.title}>My Health</Text>
+      <ScrollView contentContainerStyle={styles.container}>
+        <SectionHeader title="My Health" />
 
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: theme.spacing.md }}
-        >
-          {healthSections.map((section) => (
-            <Pressable
-              key={section.title}
-              onPress={() => router.push(section.route)}
-              style={styles.card}
-            >
-              <AppCard style={styles.tab}>
-                <Text style={styles.tabTitle}>{section.title}</Text>
-              </AppCard>
-            </Pressable>
-          ))}
-        </ScrollView>
-      </View>
+        {healthCategories.map((category) => (
+          <HealthCategoryCard
+            key={category.title}
+            title={category.title}
+            description={category.description}
+            icon={category.icon}
+            route={category.route}
+          >
+            {category.summary ? (
+              <HealthSummaryCard data={category.summary} />
+            ) : null}
+          </HealthCategoryCard>
+        ))}
+      </ScrollView>
     </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  content: {
-    flex: 1,
+  container: {
+    paddingBottom: theme.spacing.md,
+    gap: theme.spacing.sm,
   },
-
-  title: {
-    marginTop: theme.spacing.xxl,
-    ...theme.typography.title,
-    marginBottom: theme.spacing.sm,
-    textAlign: "center",
-  },
-
-  tab: {
-    marginRight: theme.spacing.xs,
-  },
-
-  tabTitle: {
-    ...theme.typography.subtitle,
-    marginBottom: theme.spacing.xs,
-  },
-
-  cardTitle: {
-    ...theme.typography.heading,
-    marginBottom: theme.spacing.xs,
-  },
-
-  cardSubtitle: {
-    ...theme.typography.subheading,
-  },
-
-  buttonContainer: {
-    marginTop: theme.spacing.xl,
-    paddingVertical: theme.spacing.lg,
-  },
-
-  card: {
-    marginBottom: theme.spacing.sm,
+  summaryRow: {
+    flexDirection: "row",
+    gap: theme.spacing.sm,
   },
 });
