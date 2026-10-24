@@ -12,44 +12,28 @@ the type to the corresponding component for rendering.
 */
 
 // Define a component for rendering text summaries
-function TextSummary({ data }: SummaryContentProps) {
-  if (data.type !== "text") return null;
+function LabsSummary({ data }: SummaryContentProps) {
+  if (data.type !== "labsSummary") return null;
 
   return (
     <View style={styles.content}>
-      <Text style={styles.summaryText}>{data.value}</Text>
-      {data.description && (
-        <Text style={styles.summaryText}>{data.description}</Text>
-      )}
+      <Text style={styles.headerText}>Clinical Activity Score (CAS)</Text>
+      <Text style={styles.title}>
+        {data.casScore}/7
+        <Text style={styles.summaryText}> Latest Assessment</Text>
+      </Text>{" "}
+      <Text style={styles.summaryText}>
+        Your CAS increased by {data.increased} since your last assessment
+      </Text>
     </View>
   );
 }
-// Define a component for rendering image summaries
-function ImageSummary({ data }: SummaryContentProps) {
-  if (data.type !== "image") return null;
+// Define a component for most recent image logs with older comparison images
+function ImagingSummary({ data }: SummaryContentProps) {
+  if (data.type !== "imagingSummary") return null;
 
   return (
     <View style={styles.content}>
-      <Image
-        source={{ uri: data.uri }}
-        style={styles.image}
-        resizeMode="cover"
-      />
-      {data.description && (
-        <Text style={styles.summaryText}>{data.description}</Text>
-      )}
-    </View>
-  );
-}
-
-// Define a component for comparing images over time
-function ImageComparisonSummary({ data }: SummaryContentProps) {
-  if (data.type !== "imageComparison") return null;
-
-  return (
-    <View style={styles.content}>
-      <Text style={styles.comparisonTitle}>{data.title}</Text>
-
       <View style={styles.imageComparisonRow}>
         {data.images.map((image, index) => (
           <View key={`${image.date}-${index}`} style={styles.comparisonItem}>
@@ -58,24 +42,41 @@ function ImageComparisonSummary({ data }: SummaryContentProps) {
               style={styles.comparisonImage}
               resizeMode="cover"
             />
-
-            <Text style={styles.imageLabel}>{image.label}</Text>
             <Text style={styles.imageDate}>{image.date}</Text>
           </View>
         ))}
       </View>
+    </View>
+  );
+}
+function MedicationSummary({ data }: SummaryContentProps) {
+  if (data.type !== "medicationSummary") return null;
 
-      {data.description && (
-        <Text style={styles.summaryText}>{data.description}</Text>
-      )}
+  return (
+    <View style={styles.content}>
+      {/* Table header */}
+      <View style={[styles.tableRow, styles.tableHeader]}>
+        <Text style={styles.headerText}>Active Medication</Text>
+        <Text style={[styles.headerText, styles.rightColumn]}>Next Dose</Text>
+      </View>
+
+      {/* Table rows */}
+      {data.medications.map((medication) => (
+        <View key={medication.id} style={styles.tableRow}>
+          <Text style={styles.medicationName}>{medication.name}</Text>
+          <Text style={[styles.doseText, styles.rightColumn]}>
+            {medication.nextDoseDate}
+          </Text>
+        </View>
+      ))}
     </View>
   );
 }
 
 const summaryRenderers = {
-  text: TextSummary,
-  image: ImageSummary,
-  imageComparison: ImageComparisonSummary,
+  labsSummary: LabsSummary,
+  imagingSummary: ImagingSummary,
+  medicationSummary: MedicationSummary,
 };
 // Main component for rendering health summary cards
 export default function HealthSummaryCard({
@@ -100,7 +101,8 @@ const styles = StyleSheet.create({
     paddingTop: theme.spacing.sm,
   },
   title: {
-    ...theme.typography.subheading,
+    ...theme.typography.title,
+    color: theme.colors.primaryText,
   },
   summaryText: {
     ...theme.typography.body,
@@ -108,40 +110,63 @@ const styles = StyleSheet.create({
   content: {
     gap: theme.spacing.xs,
   },
-  image: {
-    width: "100%",
-    height: 150,
-    borderRadius: theme.borderRadius.md,
+
+  // Styles for the medication table
+  tableHeader: {
+    flexDirection: "row",
+    paddingVertical: theme.spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
   },
-  comparisonTitle: {
+  tableRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: theme.spacing.sm,
+    paddingVertical: theme.spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
+  },
+  headerText: {
+    flex: 1,
+    ...theme.typography.subtitle,
+  },
+  rightColumn: {
+    textAlign: "right",
+  },
+  medicationName: {
+    flex: 1,
+    ...theme.typography.body,
+    color: theme.colors.primaryText,
+  },
+  doseText: {
+    flex: 1,
+    ...theme.typography.body,
+    color: theme.colors.primaryText,
+  },
+  description: {
     ...theme.typography.subheading,
+    color: theme.colors.primaryText,
+    paddingVertical: theme.spacing.sm,
   },
 
+  // Styles for individual comparison items for the imaging summary
   imageComparisonRow: {
     flexDirection: "row",
     gap: theme.spacing.sm,
   },
-  // Styles for individual comparison items within the image comparison row
   comparisonItem: {
     flex: 1,
     minWidth: 0,
     gap: theme.spacing.xs,
   },
-
   comparisonImage: {
     width: "100%",
     height: 120,
     borderRadius: theme.borderRadius.md,
+    marginTop: theme.spacing.sm,
   },
-
-  imageLabel: {
-    ...theme.typography.body,
-    fontWeight: "600",
-  },
-
   imageDate: {
     ...theme.typography.body,
-    color: "#64748B",
-    fontSize: 12,
   },
 });

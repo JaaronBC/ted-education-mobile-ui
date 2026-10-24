@@ -1,21 +1,25 @@
+/*
+ Define the types for health summary data and 
+data passed to the HealthSummaryCard component
+*/
 export type HealthSummaryData =
   | {
-      type: "text";
-      value: string | number;
-      description?: string;
+      type: "labsSummary";
+      casScore: number;
+      increased: number;
     }
   | {
-      type: "image";
-      uri: string;
-      description?: string;
-    }
-  | {
-      type: "imageComparison";
-      title: string;
+      type: "imagingSummary";
       images: {
         uri: string;
         date: string;
-        label: string;
       }[];
-      description?: string;
+    }
+  | {
+      type: "medicationSummary";
+      medications: {
+        id: string;
+        name: string;
+        nextDoseDate: string;
+      }[];
     };

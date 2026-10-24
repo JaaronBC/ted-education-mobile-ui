@@ -58,6 +58,7 @@ const styles = StyleSheet.create({
   },
   header: {
     padding: theme.spacing.md,
+    backgroundColor: theme.colors.border,
   },
   summaryContainer: {
     backgroundColor: theme.colors.surface,
