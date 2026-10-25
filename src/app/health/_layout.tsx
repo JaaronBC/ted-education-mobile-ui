@@ -3,6 +3,7 @@ import { Stack, router, type Href } from "expo-router";
 import AppCard from "@/components/ui/app-card";
 import ScreenContainer from "@/components/ui/screen-container";
 import { theme } from "@/constants/theme";
+import SectionHeader from "@/components/ui/section-header";
 
 const healthSections: {
   title: string;
@@ -19,7 +20,7 @@ export default function HealthLayout() {
   return (
     <ScreenContainer>
       <View>
-        <Text style={styles.title}>My Health</Text>
+        <SectionHeader title="My Health" BackButton backRoute="/health" />
 
         <ScrollView
           horizontal
@@ -39,13 +40,6 @@ export default function HealthLayout() {
           ))}
         </ScrollView>
       </View>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="labs" />
-        <Stack.Screen name="imaging" />
-        <Stack.Screen name="medications" />
-        <Stack.Screen name="treatments" />
-        <Stack.Screen name="records" />
-      </Stack>
     </ScreenContainer>
   );
 }

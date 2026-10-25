@@ -6,7 +6,7 @@ export type HealthSummaryData =
   | {
       type: "labsSummary";
       casScore: number;
-      increased: number;
+      dateAssessed: string;
     }
   | {
       type: "imagingSummary";

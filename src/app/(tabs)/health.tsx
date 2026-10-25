@@ -14,6 +14,7 @@ import {
   Pill,
   ClipboardList,
   FileText,
+  ArrowLeft,
 } from "lucide-react-native";
 
 const healthCategories: {
@@ -67,7 +68,7 @@ export default function HealthScreen() {
   return (
     <ScreenContainer>
       <ScrollView contentContainerStyle={styles.container}>
-        <SectionHeader title="My Health" />
+        <SectionHeader title="My Health" BackButton />
 
         {healthCategories.map((category) => (
           <HealthCategoryCard

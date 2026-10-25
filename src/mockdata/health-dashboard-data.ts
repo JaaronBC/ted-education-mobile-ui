@@ -4,7 +4,7 @@ export const dummyHealthDashboard: Record<string, HealthSummaryData> = {
   labs: {
     type: "labsSummary",
     casScore: 5,
-    increased: 1,
+    dateAssessed: "Jan 12, 2026",
   },
 
   imaging: {
