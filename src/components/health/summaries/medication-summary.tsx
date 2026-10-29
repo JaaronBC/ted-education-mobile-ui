@@ -36,6 +36,8 @@ const styles = StyleSheet.create({
     flex: 1,
     ...theme.typography.subtitle,
   },
+
+  // Styles for the medication table
   tableHeader: {
     flexDirection: "row",
     paddingVertical: theme.spacing.sm,

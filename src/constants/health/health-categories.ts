@@ -11,6 +11,7 @@ import {
 import { dummyHealthDashboard } from "@/mockdata/health-dashboard-data";
 
 export type HealthCategory = {
+  id: "labs" | "imaging" | "medications" | "treatments" | "records";
   title: string;
   description: string;
   icon: LucideIcon;
@@ -20,6 +21,7 @@ export type HealthCategory = {
 
 export const healthCategories: HealthCategory[] = [
   {
+    id: "labs",
     title: "Labs",
     description: "Review your laboratory results",
     icon: FlaskConical,
@@ -27,6 +29,7 @@ export const healthCategories: HealthCategory[] = [
     summary: dummyHealthDashboard.labs,
   },
   {
+    id: "imaging",
     title: "Imaging",
     description: "View your imaging reports",
     icon: Scan,
@@ -34,6 +37,7 @@ export const healthCategories: HealthCategory[] = [
     summary: dummyHealthDashboard.imaging,
   },
   {
+    id: "medications",
     title: "Medications",
     description: "Review your medications",
     icon: Pill,
@@ -41,12 +45,14 @@ export const healthCategories: HealthCategory[] = [
     summary: dummyHealthDashboard.medications,
   },
   {
+    id: "treatments",
     title: "Treatment History",
     description: "Review previous and ongoing treatments.",
     icon: ClipboardList,
     route: "/health/treatments",
   },
   {
+    id: "records",
     title: "Medical Records",
     description: "Access your medical documents",
     icon: FileText,

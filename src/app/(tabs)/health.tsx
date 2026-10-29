@@ -17,7 +17,7 @@ export default function HealthScreen() {
 
           return (
             <HealthCategoryCard
-              key={category.title}
+              key={category.id}
               title={category.title}
               description={category.description}
               icon={category.icon}

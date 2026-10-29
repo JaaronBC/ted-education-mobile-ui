@@ -11,13 +11,27 @@ export default function LabsSummary({ data }: SummaryContentProps) {
 
   return (
     <View style={styles.content}>
-      <Text style={styles.headerText}>Clinical Activity Score (CAS)</Text>
-      <Text style={styles.casText}>
-        {data.casScore}/7{"  "}
-        <Text style={styles.summaryText}>Latest Assessment</Text>
+      <Text style={styles.headerText}>Labs Snapshot</Text>
+      <View style={styles.statusRow}>
+        <Text style={styles.summaryText}>Thyroid State</Text>
+        <Text style={styles.valueText}>{data.thyroidState}</Text>
+      </View>
+      <View style={styles.statusRow}>
+        <Text style={styles.summaryText}>Antibodies</Text>
+        <Text style={styles.valueText}>{data.antibodyStatus}</Text>
+      </View>
+      <View style={styles.divider} />
+      <Text style={styles.headerText}>Available Labs</Text>
+      {data.availableLabs.map((lab) => (
+        <View key={lab.testName} style={styles.row}>
+          <Text style={styles.summaryText}>{lab.testName}</Text>
+          <Text style={styles.valueText}>{lab.status}</Text>
+        </View>
+      ))}
+      <View style={styles.divider} />
+      <Text style={styles.footerText}>
+        Open Labs to view full records and details.
       </Text>
-      <View style={styles.summaryDivider} />
-      <Text style={styles.footerText}>Assessed: {data.dateAssessed}</Text>
     </View>
   );
 }
@@ -26,24 +40,38 @@ const styles = StyleSheet.create({
   content: {
     gap: theme.spacing.xs,
   },
-  summaryDivider: {
+  headerText: {
+    ...theme.typography.subtitle,
+    marginTop: theme.spacing.xs,
+  },
+  statusRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: theme.spacing.sm,
+  },
+  valueText: {
+    ...theme.typography.body,
+    color: theme.colors.primaryBlue,
+    textAlign: "right",
+    flexShrink: 1,
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: theme.spacing.xs,
+    gap: theme.spacing.sm,
+  },
+  divider: {
     height: 1,
     backgroundColor: theme.colors.border,
     marginTop: theme.spacing.sm,
     marginBottom: theme.spacing.xs,
   },
-  casText: {
-    ...theme.typography.title,
-    color: theme.colors.primaryText,
-  },
   summaryText: {
     ...theme.typography.body,
   },
   footerText: {
-    ...theme.typography.subheading,
-  },
-  headerText: {
-    flex: 1,
-    ...theme.typography.subtitle,
+    ...theme.typography.caption,
   },
 });

@@ -20,7 +20,7 @@ export default function HealthLayout() {
           >
             {healthCategories.map((category) => (
               <Pressable
-                key={category.title}
+                key={category.id}
                 onPress={() => router.push(category.route)}
                 style={styles.card}
               >

@@ -10,21 +10,38 @@ type HealthDashboardData = {
 export const dummyHealthDashboard: HealthDashboardData = {
   labs: {
     type: "labsSummary",
-    casScore: 5,
-    dateAssessed: "Jan 12, 2026",
+    thyroidState: "Euthyroid",
+    antibodyStatus: "Stable",
+    audiograms: 1,
+    orbitalImagingReports: 2,
+    availableLabs: [
+      {
+        testName: "TSH",
+        status: "Available",
+      },
+      {
+        testName: "Free T4",
+        status: "Pending",
+      },
+      {
+        testName: "Free T3",
+        status: "Available",
+      },
+    ],
   },
 
   imaging: {
     type: "imagingSummary",
-    images: [
-      //Allow users to compare most recent image with an older image
+    report: [
       {
         uri: "https://images.unsplash.com/photo-1587910234573-d6fc84743bc8?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D",
+        reportType: "CT Scan",
         date: "Jan 12, 2026",
       },
       {
-        uri: "https://images.unsplash.com/photo-1564278692313-b2d65996fc93?w=1600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D",
-        date: "Oct 10, 2026",
+        uri: "https://images.unsplash.com/photo-1587910234573-d6fc84743bc8?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D",
+        reportType: "MRI",
+        date: "Feb 17, 2026",
       },
     ],
   },
