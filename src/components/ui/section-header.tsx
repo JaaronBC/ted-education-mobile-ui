@@ -1,6 +1,5 @@
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { router, type Href } from "expo-router";
-import { ArrowLeft } from "lucide-react-native";
 import AppIcon from "@/components/ui/app-icon";
 import { theme } from "@/constants/theme";
 
@@ -32,7 +31,12 @@ export default function SectionHeader({
           hitSlop={8}
           style={styles.backButton}
         >
-          <AppIcon icon={ArrowLeft} />
+          <AppIcon
+            icon="back"
+            size={24}
+            color={theme.colors.darkBlue}
+            strokeWidth={2}
+          />
         </Pressable>
       )}
 

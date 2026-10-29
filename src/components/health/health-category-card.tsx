@@ -1,14 +1,13 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { router, type Href } from "expo-router";
-import { LucideIcon } from "lucide-react-native";
 import AppCard from "@/components/ui/app-card";
 import { theme } from "@/constants/theme";
-import AppIcon from "../ui/app-icon";
+import AppIcon, { type AppIconName } from "../ui/app-icon";
 // Define the props for the HealthCategoryCard component
 type HealthCategoryCardProps = {
   title: string;
   description: string;
-  icon: LucideIcon;
+  icon: AppIconName;
   route: Href;
   children?: React.ReactNode;
 };
@@ -16,7 +15,7 @@ type HealthCategoryCardProps = {
 export default function HealthCategoryCard({
   title,
   description,
-  icon: Icon,
+  icon: iconName,
   route,
   children,
 }: HealthCategoryCardProps) {
@@ -29,7 +28,12 @@ export default function HealthCategoryCard({
       <AppCard style={styles.card}>
         <View style={styles.header}>
           <View style={styles.row}>
-            <AppIcon icon={Icon} size={28} />
+            <AppIcon
+              icon={iconName}
+              size={28}
+              color={theme.colors.darkBlue}
+              strokeWidth={2}
+            />
 
             <View style={styles.content}>
               <Text style={styles.title}>{title}</Text>
