@@ -1,6 +1,13 @@
 import type { HealthSummaryData } from "@/constants/health/health-summaries";
+
+type HealthDashboardData = {
+  labs?: HealthSummaryData;
+  imaging?: HealthSummaryData;
+  medications?: HealthSummaryData;
+};
+
 // Mock Data for Health Dashboard summaries, used for testing
-export const dummyHealthDashboard: Record<string, HealthSummaryData> = {
+export const dummyHealthDashboard: HealthDashboardData = {
   labs: {
     type: "labsSummary",
     casScore: 5,

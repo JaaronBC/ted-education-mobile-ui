@@ -29,28 +29,6 @@ export default function MedicationSummary({ data }: SummaryContentProps) {
   );
 }
 const styles = StyleSheet.create({
-  //general card styles
-  card: {
-    flex: 1,
-    gap: theme.spacing.sm,
-    backgroundColor: "transparent",
-    paddingTop: theme.spacing.sm,
-  },
-  summaryDivider: {
-    height: 1,
-    backgroundColor: theme.colors.border,
-    marginTop: theme.spacing.sm,
-    marginBottom: theme.spacing.xs,
-  },
-  labelCard: {
-    backgroundColor: theme.colors.primaryBlue,
-    padding: theme.spacing.xs,
-    borderRadius: theme.borderRadius.md,
-    borderColor: theme.colors.primaryBlue,
-    borderWidth: 1,
-    alignItems: "center",
-  },
-  // Text styles
   summaryText: {
     ...theme.typography.body,
   },
@@ -58,8 +36,6 @@ const styles = StyleSheet.create({
     flex: 1,
     ...theme.typography.subtitle,
   },
-
-  // Styles for the medication table
   tableHeader: {
     flexDirection: "row",
     paddingVertical: theme.spacing.sm,

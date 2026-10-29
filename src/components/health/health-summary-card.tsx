@@ -5,26 +5,16 @@ import LabsSummary from "./summaries/labs-summary";
 import ImagingSummary from "./summaries/imaging-summary";
 import MedicationSummary from "./summaries/medication-summary";
 
-type SummaryContentProps = {
+type HealthSummaryCardProps = {
   data: HealthSummaryData;
 };
-/*
-Data will be passed with a type property that determines 
-how the summary is rendered. The summaryRenderers object maps 
-the type to the corresponding component for rendering.
-*/
 
 const summaryRenderers = {
   labsSummary: LabsSummary,
   imagingSummary: ImagingSummary,
   medicationSummary: MedicationSummary,
 };
-// Main component for rendering health summary cards
-export default function HealthSummaryCard({
-  data,
-}: {
-  data: HealthSummaryData;
-}) {
+export default function HealthSummaryCard({ data }: HealthSummaryCardProps) {
   const Content = summaryRenderers[data.type];
 
   return (
@@ -33,9 +23,8 @@ export default function HealthSummaryCard({
     </View>
   );
 }
-// Define styles for the HealthSummaryCard component
+
 const styles = StyleSheet.create({
-  //general card styles
   card: {
     flex: 1,
     gap: theme.spacing.sm,

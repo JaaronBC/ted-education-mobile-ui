@@ -23,23 +23,21 @@ export default function LabsSummary({ data }: SummaryContentProps) {
 }
 
 const styles = StyleSheet.create({
-  //general card styles
+  content: {
+    gap: theme.spacing.xs,
+  },
   summaryDivider: {
     height: 1,
     backgroundColor: theme.colors.border,
     marginTop: theme.spacing.sm,
     marginBottom: theme.spacing.xs,
   },
-  // Text styles
   casText: {
     ...theme.typography.title,
     color: theme.colors.primaryText,
   },
   summaryText: {
     ...theme.typography.body,
-  },
-  content: {
-    gap: theme.spacing.xs,
   },
   footerText: {
     ...theme.typography.subheading,

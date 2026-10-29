@@ -34,13 +34,6 @@ export default function ImagingSummary({ data }: SummaryContentProps) {
   );
 }
 const styles = StyleSheet.create({
-  //general card styles
-  card: {
-    flex: 1,
-    gap: theme.spacing.sm,
-    backgroundColor: "transparent",
-    paddingTop: theme.spacing.sm,
-  },
   summaryDivider: {
     height: 1,
     backgroundColor: theme.colors.border,
@@ -55,21 +48,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: "center",
   },
-  // Text styles
   summaryText: {
     ...theme.typography.body,
   },
   content: {
     gap: theme.spacing.xs,
   },
-  footerText: {
-    ...theme.typography.subheading,
-  },
   imageLabel: {
     ...theme.typography.caption,
     color: theme.colors.surface,
   },
-  // Styles for individual comparison items for the imaging summary
   imageComparisonRow: {
     flexDirection: "row",
     gap: theme.spacing.sm,
