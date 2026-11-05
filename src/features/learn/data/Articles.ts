@@ -21,11 +21,11 @@ export const Articles: ArticleData[] = [
     },
     {
         key: 2,
-        thumbnail: require('../../../../assets/images/patient-resources-image.jpg'),
-        name: "TED Patient Resources",
-        accessibilityLabel: "TED Patient Resources",
-        description: "Look at resources for TED patients.",
-        link: "/tedresources"
+        thumbnail: require('../../../../assets/images/lifestyle-image.jpg'),
+        name: "Lifestyle Considerations",
+        accessibilityLabel: "Lifestyle Considerations",
+        description: "Lifestyle considerations for TED patients.",
+        link: "/lifestyle"
     },
     {
         key: 3,

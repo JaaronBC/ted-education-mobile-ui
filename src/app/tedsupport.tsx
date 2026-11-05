@@ -1,11 +1,13 @@
-import { Text, View } from 'react-native';
+import ArticleFormat from '@/features/learn/ArticleFormat';
+import { ArticleText } from '@/features/learn/data/ArticleText';
 
-export default function supportSceen() {
-    return(
-        <View className="flex-1 bg-white items-center justify-center">
-            <Text className="mt-3 text-center text-[13px] font-medium tracking-[5px] text-[#58708C]">
-                TED support groups
-            </Text>
-        </View>
+export default function supportScreen() {
+    return (
+        <ArticleFormat article={{
+            header: ArticleText[2].header,
+            paragraphs: ArticleText[2].paragraphs,
+            key: 3,
+        }}
+        />
     );
 }
