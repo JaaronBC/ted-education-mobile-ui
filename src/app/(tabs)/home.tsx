@@ -1,4 +1,5 @@
-import { Text, View, ScrollView } from 'react-native';
+import { View, ScrollView } from 'react-native';
+import { AppText as Text } from '../../components/ui/AppText';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import HomeFeatureCard from '../../components/HomeFeatureCard';

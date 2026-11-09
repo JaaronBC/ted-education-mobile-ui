@@ -1,4 +1,5 @@
-import { Text, View, ScrollView } from 'react-native';
+import { View, ScrollView } from 'react-native';
+import { AppText as Text } from '../../components/ui/AppText';
 import { Pressable } from 'react-native';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';

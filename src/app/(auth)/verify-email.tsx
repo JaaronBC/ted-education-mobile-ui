@@ -1,9 +1,10 @@
+import { AppText } from "../../components/ui/AppText";
 import { StyleSheet, Text, View } from 'react-native';
 
 export default function VerifyEmailScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Verify Email</Text>
+      <AppText style={styles.title}>Verify Email</AppText>
     </View>
   );
 }

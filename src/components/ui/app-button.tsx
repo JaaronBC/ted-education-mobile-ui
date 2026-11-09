@@ -1,3 +1,4 @@
+import { AppText } from "./AppText";
 import { Pressable, StyleSheet, Text } from "react-native";
 import { theme } from "@/constants/theme";
 
@@ -29,7 +30,7 @@ export default function AppButton({
         disabled && styles.disabledButton,
       ]}
     >
-      <Text
+      <AppText
         style={[
           styles.text,
           variant === "secondary" && styles.secondaryText,
@@ -37,7 +38,7 @@ export default function AppButton({
         ]}
       >
         {title}
-      </Text>
+      </AppText>
     </Pressable>
   );
 }

@@ -52,4 +52,3 @@ const NextCard = (props: NextCardProps) => {
 }
 
 export default NextCard;
-

@@ -17,12 +17,12 @@ const LearnCard = (props: LearnCardProps) => {
           accessibilityLabel={props.accessibilityLabel}
           className="mt-2 min-h-[80px] w-[100%] flex-row items-center justify-center rounded-2xl active:opacity-80 border-[#D8E0E4] border-[1px]"
           style={{
-              backgroundColor: '#FFFFFF' 
+              backgroundColor: '#FFFFFF'
                 }}
                 onPress={() => router.push(props.link)}
               >
                 <View className="w-full flex-row items-center justify-between px-2">
-                  <Image 
+                  <Image
                     style={{ width: 80, height: 70, borderRadius: 10 }}
                     source = {props.thumbnail}
                   />
@@ -31,7 +31,7 @@ const LearnCard = (props: LearnCardProps) => {
                       numberOfLines={2}
                       adjustsFontSizeToFit
                       className="text-[18px] font-light"
-                      style={{ 
+                      style={{
                         fontFamily: 'Georgia',
                         fontWeight: '300',
                         color: '#1F2933',
@@ -64,4 +64,3 @@ const LearnCard = (props: LearnCardProps) => {
 }
 
 export default LearnCard;
-
