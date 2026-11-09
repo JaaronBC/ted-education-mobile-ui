@@ -1,3 +1,4 @@
+import { AppText } from "../../components/ui/AppText";
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import {
@@ -28,11 +29,11 @@ export default function WelcomeScreen() {
                 accessibilityLabel="Oculofacial Plastic Surgery of Hawaii"
               />
 
-              <Text className="mt-3 text-center text-[13px] font-medium tracking-[5px] text-[#58708C]">
+              <AppText className="mt-3 text-center text-[13px] font-medium tracking-[5px] text-[#58708C]">
                 YOUR GUIDE TO
-              </Text>
+              </AppText>
 
-              <Text
+              <AppText
                 className="mt-3 text-center text-[47px] leading-[50px] text-[#17395D]"
                 style={{
                   fontFamily: 'Georgia',
@@ -40,13 +41,13 @@ export default function WelcomeScreen() {
                 }}
               >
                 Thyroid Eye{'\n'}Disease
-              </Text>
+              </AppText>
 
-              <Text className="mt-5 text-center text-[17px] leading-7 text-[#617994]">
+              <AppText className="mt-5 text-center text-[17px] leading-7 text-[#617994]">
                 Learn about TED, track changes,{'\n'}
                 and prepare information for{'\n'}
                 your care team.
-              </Text>
+              </AppText>
 
               <Pressable
                 onPress={handleGetStarted}
@@ -54,13 +55,13 @@ export default function WelcomeScreen() {
                 accessibilityLabel="Get Started"
                 className="mt-8 h-[60px] w-[82%] flex-row items-center justify-center rounded-full bg-[#176EA5] active:opacity-80"
               >
-                <Text className="text-[20px] font-semibold text-white">
+                <AppText className="text-[20px] font-semibold text-white">
                   Get Started
-                </Text>
+                </AppText>
 
-                <Text className="ml-5 text-[30px] font-light text-white">
+                <AppText className="ml-5 text-[30px] font-light text-white">
                   →
-                </Text>
+                </AppText>
               </Pressable>
             </View>
 
@@ -81,16 +82,16 @@ export default function WelcomeScreen() {
                       accessibilityLabel="Privacy and Data"
                       hitSlop={12}
                     >
-                      <Text className="text-[15px] font-semibold text-[#176EA5]">
+                      <AppText className="text-[15px] font-semibold text-[#176EA5]">
                         Privacy &amp; Data
-                      </Text>
+                      </AppText>
                     </Pressable>
 
-                    <Text className="mt-4 max-w-[340px] text-center text-[11px] leading-[17px] text-[#718399]">
+                    <AppText className="mt-4 max-w-[340px] text-center text-[11px] leading-[17px] text-[#718399]">
                       This app is for educational purposes only.{'\n'}
                       It is not a substitute for professional medical advice,
                       diagnosis, or treatment.
-                    </Text>
+                    </AppText>
                   </View>
                 </View>
               </ImageBackground>

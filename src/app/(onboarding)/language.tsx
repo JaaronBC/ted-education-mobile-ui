@@ -1,3 +1,4 @@
+import { AppText } from "../../components/ui/AppText";
 import { Pressable, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -20,7 +21,7 @@ export default function LanguageScreen() {
                 onPress={() => router.back()}
                 className="mt-3 self-start"
               >
-                <Text
+                <AppText
                   className="text-left text-[25px] leading-[25px] text-[#17395D]"
                   style={{
                     fontFamily: 'Georgia',
@@ -29,9 +30,9 @@ export default function LanguageScreen() {
                   }}
                 >
                   ˂ Back
-                </Text>
+                </AppText>
               </Pressable>
-              <Text
+              <AppText
                 className="mt-10 text-center text-[39px] leading-[50px] text-[#17395D]"
                 style={{
                   fontFamily: 'Georgia',
@@ -39,9 +40,9 @@ export default function LanguageScreen() {
                 }}
               >
                 Choose Your Language
-              </Text>
+              </AppText>
 
-              <Text
+              <AppText
                 className="mt-5 text-center text-[17px] leading-7 text-[#617994]"
                 style={{
                   fontFamily: 'Georgia',
@@ -49,7 +50,7 @@ export default function LanguageScreen() {
                 }}
               >
                 You can change this later {'\n'} in Settings.
-              </Text>
+              </AppText>
 
               <Pressable
                 accessibilityRole="button"
@@ -67,7 +68,7 @@ export default function LanguageScreen() {
                 }}
               >
                 <View className="w-full flex-row items-center justify-between px-4">
-                  <Text
+                  <AppText
                     className="text-[30px] font-light text-white"
                     style={{
                       fontFamily: 'Georgia',
@@ -76,9 +77,9 @@ export default function LanguageScreen() {
                     }}
                   >
                     English
-                  </Text>
+                  </AppText>
                   {selectedLanguage === 'en' && (
-                    <Text className="text-[25px] text-[#17395D]">✓</Text>
+                    <AppText className="text-[25px] text-[#17395D]">✓</AppText>
                   )}
                 </View>
               </Pressable>
@@ -98,18 +99,18 @@ export default function LanguageScreen() {
                   backgroundColor: selectedLanguage === 'zh' ? '#618FA7' : 'white',
                 }}>
                 <View className="w-full flex-row items-center justify-between px-4">
-                  <Text className="text-[30px] font-light text-white"
+                  <AppText className="text-[30px] font-light text-white"
                     style={{
                       fontFamily: 'Georgia',
                       fontWeight: '300',
                       color: '#0d0e0e',
                     }}>
                     中文
-                  </Text>
+                  </AppText>
                   {selectedLanguage === 'zh' &&
-                    <Text className="text-[25px] text-[#17395D]">
+                    <AppText className="text-[25px] text-[#17395D]">
                       ✓
-                    </Text>}
+                    </AppText>}
                 </View>
               </Pressable>
               <Pressable
@@ -127,18 +128,18 @@ export default function LanguageScreen() {
                   backgroundColor: selectedLanguage === 'jp' ? '#618FA7' : 'white',
                 }}>
                 <View className="w-full flex-row items-center justify-between px-4">
-                  <Text className="text-[30px] font-light text-white"
+                  <AppText className="text-[30px] font-light text-white"
                     style={{
                       fontFamily: 'Georgia',
                       fontWeight: '300',
                       color: '#0d0e0e',
                     }}>
                     日本語
-                  </Text>
+                  </AppText>
                   {selectedLanguage === 'jp' &&
-                    <Text className="text-[25px] text-[#17395D]">
+                    <AppText className="text-[25px] text-[#17395D]">
                       ✓
-                    </Text>}
+                    </AppText>}
                 </View>
               </Pressable>
               <Pressable
@@ -156,18 +157,18 @@ export default function LanguageScreen() {
                   backgroundColor: selectedLanguage === 'kr' ? '#618FA7' : 'white',
                 }}>
                 <View className="w-full flex-row items-center justify-between px-4">
-                  <Text className="text-[30px] font-light text-white"
+                  <AppText className="text-[30px] font-light text-white"
                     style={{
                       fontFamily: 'Georgia',
                       fontWeight: '300',
                       color: '#0d0e0e',
                     }}>
                     한국어
-                  </Text>
+                  </AppText>
                   {selectedLanguage === 'kr' &&
-                    <Text className="text-[25px] text-[#17395D]">
+                    <AppText className="text-[25px] text-[#17395D]">
                       ✓
-                    </Text>}
+                    </AppText>}
                 </View>
               </Pressable>
               <Pressable
@@ -185,18 +186,18 @@ export default function LanguageScreen() {
                   backgroundColor: selectedLanguage === 'es' ? '#618FA7' : 'white',
                 }}>
                 <View className="w-full flex-row items-center justify-between px-4">
-                  <Text className="text-[30px] font-light text-white"
+                  <AppText className="text-[30px] font-light text-white"
                     style={{
                       fontFamily: 'Georgia',
                       fontWeight: '300',
                       color: '#0d0e0e',
                     }}>
                     Español
-                  </Text>
+                  </AppText>
                   {selectedLanguage === 'es' &&
-                    <Text className="text-[25px] text-[#17395D]">
+                    <AppText className="text-[25px] text-[#17395D]">
                       ✓
-                    </Text>}
+                    </AppText>}
                 </View>
               </Pressable>
               <Pressable
@@ -205,9 +206,9 @@ export default function LanguageScreen() {
                 accessibilityLabel="Continue"
                 className="mt-12 h-[60px] w-[100%] flex-row items-center justify-center rounded-full bg-[#CFB990] active:opacity-80"
               >
-                <Text className="text-[20px] font-semibold text-white">
+                <AppText className="text-[20px] font-semibold text-white">
                   Continue
-                </Text>
+                </AppText>
               </Pressable>
             </View>
           </SafeAreaView>

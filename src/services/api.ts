@@ -1,4 +1,4 @@
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
+import { apiRequest } from './apiClient';
 
 export interface HealthResponse {
   status: string;
@@ -6,12 +6,6 @@ export interface HealthResponse {
   timestamp: string;
 }
 
-export async function getHealth(): Promise<HealthResponse> {
-  const response = await fetch(`${API_URL}/health`);
-
-  if (!response.ok) {
-    throw new Error(`API request failed: ${response.status}`);
-  }
-
-  return response.json();
+export function getHealth(): Promise<HealthResponse> {
+  return apiRequest<HealthResponse>('/health');
 }

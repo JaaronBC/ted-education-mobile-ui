@@ -1,3 +1,4 @@
+import { AppText } from "./ui/AppText";
 import { Pressable, Text, View } from 'react-native';
 import { router, Href } from 'expo-router';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -28,7 +29,7 @@ const HomeFeatureCard = (props: HomeFeatureCardProps) => {
                       color={'#3F6F86'}
                     />
                     <View className="flex-col justify-center ml-5 flex-1">
-                      <Text
+                      <AppText
                         className="text-[25px] font-light"
                         style={{ 
                           fontFamily: 'Georgia',
@@ -37,8 +38,8 @@ const HomeFeatureCard = (props: HomeFeatureCardProps) => {
                         }}
                       >
                         {props.name}
-                      </Text>
-                      <Text
+                      </AppText>
+                      <AppText
                         className="text-[16px] justify-center"
                         style={{
                           fontFamily: 'Georgia',
@@ -47,9 +48,9 @@ const HomeFeatureCard = (props: HomeFeatureCardProps) => {
                         }}
                       >
                         {props.description}
-                      </Text>
+                      </AppText>
                     </View>
-                    <Text className="text-[25px] text-[#17395D]">→</Text>
+                    <AppText className="text-[25px] text-[#17395D]">→</AppText>
                   </View>
                 </Pressable>
     );

@@ -1,9 +1,10 @@
+import { AppText } from "../../components/ui/AppText";
 import { StyleSheet, Text, View } from 'react-native';
 
 export default function ResetPasswordScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Reset Password</Text>
+      <AppText style={styles.title}>Reset Password</AppText>
     </View>
   );
 }

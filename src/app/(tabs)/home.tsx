@@ -1,3 +1,4 @@
+import { AppText } from "../../components/ui/AppText";
 import { Text, View, ScrollView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -12,22 +13,22 @@ export default function HomeScreen() {
           <SafeAreaView className="flex-1">
             <ScrollView>
               <View className="items-start px-7 pt-3">
-                <Text className="mt-10 text-center text-[39px] leading-[50px] text-[#17395D]"
+                <AppText className="mt-10 text-center text-[39px] leading-[50px] text-[#17395D]"
                   style={{
                     fontFamily: 'Georgia',
                     fontWeight: '500',
                   }}
                 >
                   Welcome
-                </Text>
-                <Text className="text-left text-[18px] leading-[25px] text-[#618FA7]"
+                </AppText>
+                <AppText className="text-left text-[18px] leading-[25px] text-[#618FA7]"
                   style={{
                     fontFamily: 'Georgia',
                     fontWeight: '200',
                   }}
                 >
                   Learn. Track. Organize. Understand. {'\n'}Take control of your eye health.
-                </Text>
+                </AppText>
                 <HomeFeatureCard
                   iconname="book"
                   name="Learn"
