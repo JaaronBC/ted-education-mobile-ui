@@ -1,110 +1,148 @@
 import { useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import {
+  Alert,Pressable,ScrollView,
+  StyleSheet,TextInput
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Redirect, useRouter } from 'expo-router';
-import { Camera, ChevronDown, LockKeyhole, UserRound, Check } from 'lucide-react-native';
+import { Redirect } from 'expo-router';
 import { AppText as Text } from '../../../components/ui/AppText';
 import { useSession } from '../../../contexts/SessionContext';
-import { useAccessibility } from '../../../contexts/AccessibilityContext';
+import { useLanguage } from '../../../i18n/LanguageContext';
 import { theme } from '../../../constants/theme';
 
-const C = theme.colors;
-const GENDERS = ['Male', 'Female', 'Prefer not to say'] as const;
-type Gender = typeof GENDERS[number] | '';
+const C=theme.colors;
 
-export default function PersonalInformationScreen() {
-  const { role } = useSession();
-  if (role === 'anonymous') return <Redirect href="/(auth)/login" />;
-  return <PersonalForm />;
+const genders=[
+  {value:'MALE',label:'Male'},
+  {value:'FEMALE',label:'Female'},
+  {value:'PREFER_NOT_TO_SAY',label:'Prefer not to say'}
+] as const;
+
+export default function PersonalInformationScreen(){
+  const {user}=useSession();
+  if (!user) return <Redirect href="/(auth)/login"/>;
+  return <PersonalInformationForm key={user.id} user={user}/>;
 }
 
-function PersonalForm() {
-  const router = useRouter();
-  const { fontScale } = useAccessibility();
-  const [fullName, setFullName] = useState('');
-  const [gender, setGender] = useState<Gender>('');
-  const [expanded, setExpanded] = useState(false);
-  const [error, setError] = useState('');
+function PersonalInformationForm({user}: {
+  user: NonNullable<ReturnType<typeof useSession>['user']>;
+}) {
+  const {updateAccountProfile}=useSession();
+  const {t}=useLanguage();
 
-  const save = () => {
-    if (fullName.trim().length < 2) {
-      setError('Full name is required (at least 2 characters).');
+  const [name,setName]=useState(user?.fullName||'');
+  const [gender,setGender]=useState<
+    'MALE'|'FEMALE'|'PREFER_NOT_TO_SAY'|null
+  >(user?.gender??null);
+
+  const [error,setError]=useState('');
+  const [busy,setBusy]=useState(false);
+
+
+  const save=async()=>{
+    if(name.trim().length<2){
+      setError('Full name is required.');
       return;
     }
+
+    setBusy(true);
     setError('');
-    // Profile-write endpoint and secure local persistence have not been implemented.
-    Alert.alert('Account storage unavailable', 'Profile changes cannot be saved until authenticated profile storage is connected.');
+
+    try{
+      await updateAccountProfile({
+        fullName:name.trim(),
+        ...(gender?{gender}:{})
+      });
+
+      Alert.alert(t('Save'),'Your profile has been updated.');
+    }catch(e){
+      setError(e instanceof Error?e.message:'Save failed');
+    }finally{
+      setBusy(false);
+    }
   };
 
-  return (
-    <SafeAreaView edges={['bottom']} style={styles.screen}>
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
-          <Text style={styles.intro}>Manage your personal details and account security.</Text>
-          <View style={styles.photoCard}>
-            <View style={styles.avatar}><UserRound size={36} color={C.darkBlue} /></View>
-            <View style={{ flex: 1, paddingLeft: 14 }}>
-              <Text style={styles.photoTitle}>Profile photo</Text>
-              <Text style={styles.note}>Choose or update your photo</Text>
-            </View>
-            <Pressable style={styles.photoButton} accessibilityRole="button" accessibilityLabel="Upload profile photo" onPress={() => Alert.alert('Profile photo', 'Photo uploading is not connected yet.')}>
-              <Camera size={20} color={C.darkBlue} />
-            </Pressable>
-          </View>
+  return <SafeAreaView edges={['bottom']} style={s.page}>
+    <ScrollView contentContainerStyle={s.content}>
+      <Text style={s.heading}>
+        {t('Personal Information')}
+      </Text>
 
-          <Text style={styles.section}>PERSONAL DETAILS</Text>
-          <View style={styles.formCard}>
-            <Text style={styles.fieldLabel}>Full name <Text style={styles.required}>*</Text></Text>
-            <TextInput style={[styles.input, { fontSize: 15 * fontScale, minHeight: 52 * fontScale }]} value={fullName} onChangeText={(v) => { setFullName(v); setError(''); }} placeholder="Enter your full name" placeholderTextColor="#7B8A97" autoCapitalize="words" autoComplete="name" maxLength={100} accessibilityLabel="Full name, required" />
-            {error ? <Text style={styles.error} accessibilityRole="alert">{error}</Text> : null}
-            <View style={styles.separator} />
-            <Text style={styles.fieldLabel}>Gender <Text style={styles.optional}>(optional)</Text></Text>
-            <Pressable style={styles.select} onPress={() => setExpanded(!expanded)} accessibilityRole="button" accessibilityLabel={`Gender: ${gender || 'Not specified'}`} accessibilityState={{ expanded }}>
-              <Text style={styles.selectText}>{gender || 'Select gender'}</Text><ChevronDown size={19} color={C.darkBlue} />
-            </Pressable>
-            {expanded && <View style={styles.options}>{GENDERS.map((option) => (
-              <Pressable key={option} style={styles.option} accessibilityRole="radio" accessibilityState={{ checked: gender === option }} onPress={() => { setGender(option); setExpanded(false); }}>
-                <Text style={styles.selectText}>{option}</Text>{gender === option && <Check size={20} color={C.darkBlue} />}
-              </Pressable>
-            ))}</View>}
-          </View>
+      <Text style={s.label}>{t('Full name')} *</Text>
 
-          <Text style={styles.section}>ACCOUNT & SECURITY</Text>
-          <Pressable style={styles.photoCard} accessibilityRole="button" accessibilityLabel="Change password" onPress={() => router.push('/(auth)/forgot-password')}>
-            <View style={styles.smallIcon}><LockKeyhole size={22} color={C.darkBlue} /></View>
-            <View style={{ flex: 1, marginLeft: 14 }}><Text style={styles.photoTitle}>Password and security</Text><Text style={styles.note}>Update account security settings</Text></View>
-          </Pressable>
-          <Pressable style={styles.primaryButton} accessibilityRole="button" onPress={save}>
-            <Text style={styles.primaryButtonText}>Save Changes</Text>
-          </Pressable>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
-  );
+      <TextInput
+        value={name}
+        onChangeText={setName}
+        autoComplete="name"
+        autoCapitalize="words"
+        maxLength={120}
+        style={s.input}
+      />
+
+      <Text style={s.label}>
+        {t('Gender')} ({t('Optional')})
+      </Text>
+
+      {genders.map(g=>
+        <Pressable key={g.value}
+          style={[
+            s.option,
+            gender===g.value&&s.active
+          ]}
+          onPress={()=>setGender(g.value)}>
+          <Text style={s.optionText}>{t(g.label)}</Text>
+          <Text>{gender===g.value?'✓':''}</Text>
+        </Pressable>
+      )}
+
+      {error?<Text style={s.error}>{error}</Text>:null}
+
+      <Pressable disabled={busy}
+        onPress={()=>{void save();}}
+        style={s.button}>
+        <Text style={s.buttonText}>
+          {busy?'...':t('Save changes')}
+        </Text>
+      </Pressable>
+    </ScrollView>
+  </SafeAreaView>;
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: C.surface },
-  content: { paddingHorizontal: 20, paddingTop: 22, paddingBottom: 56 },
-  intro: { fontSize: 14, color: C.secondaryText, lineHeight: 22, marginBottom: 20 },
-  photoCard: { flexDirection: 'row', alignItems: 'center', padding: 18, borderRadius: 18, borderColor: C.border, borderWidth: 1, backgroundColor: '#FFFFFF' },
-  avatar: { width: 66, height: 66, borderRadius: 33, backgroundColor: C.lightBlue, justifyContent: 'center', alignItems: 'center' },
-  photoTitle: { color: C.primaryText, fontSize: 16, fontWeight: '700' },
-  note: { color: C.secondaryText, fontSize: 12, lineHeight: 18, marginTop: 5 },
-  photoButton: { width: 46, height: 46, borderRadius: 12, backgroundColor: C.lightBlue, justifyContent: 'center', alignItems: 'center' },
-  section: { marginTop: 26, marginBottom: 10, marginLeft: 3, fontSize: 11, fontWeight: '700', letterSpacing: 1.5, color: C.darkBlue },
-  formCard: { backgroundColor: '#FFFFFF', padding: 18, borderWidth: 1, borderColor: C.border, borderRadius: 18 },
-  fieldLabel: { fontSize: 15, fontWeight: '700', color: C.primaryText, marginBottom: 11 },
-  required: { color: C.error, fontWeight: '700' },
-  optional: { fontSize: 12, fontWeight: '400', color: C.secondaryText },
-  input: { borderColor: C.border, borderWidth: 1, borderRadius: 12, backgroundColor: '#FFFFFF', paddingHorizontal: 14, color: C.primaryText },
-  error: { color: C.error, marginTop: 8, fontSize: 12 },
-  separator: { height: StyleSheet.hairlineWidth, backgroundColor: C.border, marginVertical: 20 },
-  select: { borderWidth: 1, borderColor: C.border, borderRadius: 12, minHeight: 53, paddingHorizontal: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  selectText: { fontSize: 15, color: C.primaryText },
-  options: { marginTop: 8, borderWidth: 1, borderColor: C.border, borderRadius: 12, overflow: 'hidden' },
-  option: { minHeight: 48, paddingHorizontal: 14, paddingVertical: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderBottomWidth: StyleSheet.hairlineWidth, borderColor: C.border },
-  smallIcon: { width: 45, height: 45, borderRadius: 12, backgroundColor: C.lightBlue, justifyContent: 'center', alignItems: 'center' },
-  primaryButton: { backgroundColor: C.darkBlue, minHeight: 52, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginTop: 24 },
-  primaryButtonText: { fontSize: 16, fontWeight: '700', color: '#FFFFFF' },
+const s=StyleSheet.create({
+  page:{flex:1,backgroundColor:C.surface},
+  content:{padding:22,paddingBottom:55},
+  heading:{
+    fontSize:27,fontWeight:'700',
+    color:C.primaryText,marginBottom:20
+  },
+  label:{
+    fontSize:15,fontWeight:'700',
+    color:C.primaryText,marginTop:18,marginBottom:9
+  },
+  input:{
+    borderWidth:1,borderColor:C.border,
+    backgroundColor:'#fff',borderRadius:12,
+    minHeight:54,paddingHorizontal:14,fontSize:17
+  },
+  option:{
+    minHeight:51,paddingHorizontal:15,
+    borderWidth:1,borderColor:C.border,
+    borderRadius:12,marginBottom:8,
+    flexDirection:'row',alignItems:'center',
+    justifyContent:'space-between',
+    backgroundColor:'#fff'
+  },
+  active:{
+    backgroundColor:C.lightBlue,borderColor:C.darkBlue
+  },
+  optionText:{color:C.primaryText,fontSize:15},
+  button:{
+    minHeight:53,backgroundColor:C.darkBlue,
+    borderRadius:13,alignItems:'center',
+    justifyContent:'center',marginTop:24
+  },
+  buttonText:{
+    color:'#fff',fontSize:16,fontWeight:'700'
+  },
+  error:{color:C.error,marginTop:12}
 });

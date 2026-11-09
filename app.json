@@ -6,27 +6,44 @@
     "orientation": "portrait",
     "scheme": "tededucationmobileui",
     "userInterfaceStyle": "automatic",
-    "ios": {},
+    "ios": {
+      "bundleIdentifier": "com.ruichen12.tededucation"
+    },
     "android": {
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.ruichen12.tededucation"
     },
     "web": {
       "bundler": "metro",
       "output": "static"
+    },
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF"
+          "backgroundColor": "#208AEF",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 160
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.839211012526-qkq6pi3687nusk9i55rd3dmemd89h9dj"
+        }
+      ]
     ],
-    "experiments": {
-      "typedRoutes": true,
-      "reactCompiler": true
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "360f707e-06b9-49f5-999f-fce820aff6de"
+      }
     }
   }
 }

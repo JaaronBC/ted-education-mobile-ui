@@ -48,7 +48,7 @@ export default function AccessibilitySettingsScreen() {
           <Text style={styles.sampleHeading}>Thyroid Eye Disease</Text>
           <Text style={styles.sampleBody}>Learn about TED, understand your symptoms, and prepare questions for your doctor.</Text>
         </View>
-        <Text style={styles.bottomNote}>The app also respects your device's accessibility settings. Larger text may wrap onto additional lines.</Text>
+        <Text style={styles.bottomNote}>The app also respects your device&apos;s accessibility settings. Larger text may wrap onto additional lines.</Text>
       </ScrollView>
     </SafeAreaView>
   );

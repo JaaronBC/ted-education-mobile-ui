@@ -19,6 +19,9 @@ const SECTIONS: { title: string; items: Setting[] }[] = [
   { title: "YOUR DETAILS", items: [
     { title: "Personal Information", description: "Name, photo and optional details", icon: UserRound, href: "/profile/personal" },
   ] },
+  { title: "ACCOUNT SECURITY", items: [
+    { title: "Two-factor authentication", description: "Authenticator and recovery codes", icon: LockKeyhole, href: "/profile/security" },
+  ] },
   { title: "PREFERENCES", items: [
     { title: "Language", description: "Choose your preferred language", icon: Languages, href: "/profile/language" },
     { title: "Accessibility", description: "Text size and display options", icon: Accessibility, href: "/profile/accessibility" },
@@ -74,7 +77,7 @@ export default function ProfileScreen() {
             <View style={styles.sectionCard}>
               {section.items.map((item, i) => (
                 <Fragment key={item.title}>
-                  <SettingsRow icon={item.icon} title={item.title} description={item.description} onPress={() => router.push(anonymous && item.title === "Personal Information" ? "/(auth)/login" : item.href)} />
+                  <SettingsRow icon={item.icon} title={item.title} description={item.description} onPress={() => router.push(anonymous && (item.title === "Personal Information" || item.title === "Two-factor authentication") ? "/(auth)/login" : item.href)} />
                   {i !== section.items.length - 1 && <View style={styles.separator} />}
                 </Fragment>
               ))}
@@ -85,7 +88,7 @@ export default function ProfileScreen() {
         {!anonymous && (
           <Pressable
             style={styles.signInButton}
-            onPress={() => { void signOut(); }}
+            onPress={() => { void signOut().then(()=>router.replace('/welcome')); }}
             accessibilityRole="button"
           >
             <Text style={styles.signInText}>Sign out</Text>

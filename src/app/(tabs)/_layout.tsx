@@ -1,15 +1,17 @@
-﻿import { Tabs } from "expo-router";
+import { Tabs } from "expo-router";
 import React from "react";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 export default function Layout() {
+  const {t}=useLanguage();
   return (
     <React.Fragment>
         <Tabs screenOptions={{ headerShown: false, tabBarActiveTintColor: "#618FA7" }} >
             <Tabs.Screen 
               name="home" 
               options={{
-                title: "Home",
+                title: t('Home'),
                 tabBarIcon: ({color}) => (
                   <MaterialCommunityIcons 
                     name="home"
@@ -22,7 +24,7 @@ export default function Layout() {
             <Tabs.Screen 
               name="learn" 
               options={{
-                title: "Learn",
+                title: t('Learn'),
                 tabBarIcon: ({color}) => (
                   <MaterialCommunityIcons 
                     name="book-open"
@@ -35,7 +37,7 @@ export default function Layout() {
             <Tabs.Screen 
               name="track"
               options={{
-                title: "Track",
+                title: t('Track'),
                 tabBarIcon: ({color}) => (
                   <MaterialCommunityIcons 
                     name="chart-bar"
@@ -48,7 +50,7 @@ export default function Layout() {
             <Tabs.Screen 
               name="health" 
               options={{
-                title: "My Health",
+                title: t('My Health'),
                 tabBarIcon: ({color}) => (
                   <MaterialCommunityIcons 
                     name="heart"
@@ -61,7 +63,7 @@ export default function Layout() {
             <Tabs.Screen 
               name="profile" 
               options={{
-                title: "Profile",
+                title: t('Profile'),
                 tabBarIcon: ({color}) => (
                   <MaterialCommunityIcons 
                     name="account"

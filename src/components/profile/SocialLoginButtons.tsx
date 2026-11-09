@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React, { useState } from 'react';
 import {
   Alert,
   Pressable,
@@ -7,8 +7,21 @@ import {
 } from 'react-native';
 import { AppText as Text } from '../ui/AppText';
 import { theme } from '../../constants/theme';
+import { useRouter } from 'expo-router';
+import {
+  GoogleSignin,
+  isErrorWithCode,
+  isSuccessResponse,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
+import { useSession } from '../../contexts/SessionContext';
 
 const C = theme.colors;
+
+GoogleSignin.configure({
+  webClientId: '839211012526-btlaslcpd1dbh52926jsp59llmtrh54o.apps.googleusercontent.com',
+  iosClientId: '839211012526-qkq6pi3687nusk9i55rd3dmemd89h9dj.apps.googleusercontent.com',
+});
 
 type Provider = 'Google' | 'Apple' | 'Facebook';
 
@@ -19,6 +32,52 @@ type Props = {
 export default function SocialLoginButtons({
   mode = 'login',
 }: Props) {
+  const router = useRouter();
+  const { loginWithGoogleToken } = useSession();
+  const [googleBusy, setGoogleBusy] = useState(false);
+
+  const handleGooglePress = async () => {
+    if (googleBusy) return;
+    setGoogleBusy(true);
+
+    try {
+      await GoogleSignin.hasPlayServices({
+        showPlayServicesUpdateDialog: true,
+      });
+
+      const response = await GoogleSignin.signIn();
+
+      // The user cancelled account selection.
+      if (!isSuccessResponse(response)) return;
+
+      const idToken = response.data.idToken;
+
+      if (!idToken) {
+        throw new Error('Google did not return an ID token.');
+      }
+
+      const next = await loginWithGoogleToken(idToken);
+
+      router.replace((next === 'mfa' ? '/(auth)/verify-2fa' : next === 'onboarding' ? '/(setup)/your-name' : '/(tabs)/home') as never);
+    } catch (error) {
+      if (
+        isErrorWithCode(error) &&
+        error.code === statusCodes.SIGN_IN_CANCELLED
+      ) {
+        return;
+      }
+
+      Alert.alert(
+        'Google sign-in failed',
+        error instanceof Error
+          ? error.message
+          : 'Please try again.',
+      );
+    } finally {
+      setGoogleBusy(false);
+    }
+  };
+
   const handlePress = (provider: Provider) => {
     Alert.alert(
       `${provider} Sign-In`,
@@ -38,7 +97,8 @@ export default function SocialLoginButtons({
 
       <Pressable
         style={styles.button}
-        onPress={() => handlePress('Google')}
+        onPress={() => { void handleGooglePress(); }}
+        disabled={googleBusy}
         accessibilityRole="button"
         accessibilityLabel="Continue with Google"
       >
@@ -46,7 +106,7 @@ export default function SocialLoginButtons({
           <Text style={styles.googleIcon}>G</Text>
         </View>
         <Text style={styles.buttonText}>
-          Continue with Google
+          {googleBusy ? 'Signing in...' : 'Continue with Google'}
         </Text>
       </Pressable>
 
