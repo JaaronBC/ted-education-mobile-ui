@@ -6,7 +6,6 @@ import { useRouter } from 'expo-router';
 import { ArrowLeft, ChevronDown, Check, UserRound } from 'lucide-react-native';
 import { AppText as Text } from '../../components/ui/AppText';
 import { useAccessibility } from '../../contexts/AccessibilityContext';
-import { useSession } from '../../contexts/SessionContext';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { authApi, type RegisterInput } from '../../services/authApi';
 import { ApiError } from '../../services/apiClient';
@@ -51,7 +50,6 @@ export default function RegisterScreen() {
   const router = useRouter();
   const { fontScale } = useAccessibility();
   const {t,language}=useLanguage();
-  const { login: signInNewUser } = useSession();
   const [name, setName] = useState('');
   const [gender, setGender] = useState('');
   const [expanded, setExpanded] = useState(false);
@@ -84,9 +82,21 @@ export default function RegisterScreen() {
         ...(selectedGender ? { gender: selectedGender } : {}),
       });
 
-      const next = await signInNewUser(email.trim(),password);
-      router.replace((next === 'mfa'
-        ? '/(auth)/verify-2fa' : '/(setup)/your-name') as never);
+      let requestFailed = false;
+
+      try {
+        await authApi.requestEmailVerification(email.trim());
+      } catch {
+        requestFailed = true;
+      }
+
+      router.replace({
+        pathname: '/(auth)/verify-email',
+        params: {
+          email: email.trim().toLowerCase(),
+          requestFailed: requestFailed ? '1' : '0',
+        },
+      } as never);
     } catch (e) {
       if (e instanceof ApiError && e.status === 409) {
         setDuplicateEmail(true);

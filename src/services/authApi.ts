@@ -21,7 +21,7 @@ export type RegisterInput = {
 };
 
 export type MfaLoginResponse = { mfaRequired: true; challengeToken: string };
-export type FullLoginResponse = { mfaRequired: false; accessToken: string; tokenType: 'Bearer'; expiresIn: number };
+export type FullLoginResponse = { mfaRequired: false; accessToken: string; refreshToken: string; tokenType: 'Bearer'; expiresIn: number };
 export type LoginResponse = MfaLoginResponse | FullLoginResponse;
 
 export type ProfileUpdate = {
@@ -48,6 +48,36 @@ export const authApi = {
     apiRequest<FullLoginResponse>('/auth/mfa/disable', { method: 'POST', token, body: { code } }),
   mfaVerify: (challengeToken: string, code: string) =>
     apiRequest<FullLoginResponse>('/auth/mfa/verify', { method: 'POST', body: { challengeToken, code } }),
+  requestEmailVerification: (email: string) =>
+    apiRequest<{ message: string }>('/auth/verify-email/request', {
+      method: 'POST',
+      body: { email },
+    }),
+
+  confirmEmailVerification: (email: string, code: string) =>
+    apiRequest<{ message: string }>('/auth/verify-email/confirm', {
+      method: 'POST',
+      body: { email, code },
+    }),
+
+  refresh: (refreshToken: string) =>
+    apiRequest<FullLoginResponse>('/auth/refresh', {
+      method: 'POST',
+      body: { refreshToken },
+    }),
+
+  logout: (accessToken: string) =>
+    apiRequest<{ message: string }>('/auth/logout', {
+      method: 'POST',
+      token: accessToken,
+    }),
+
+  logoutAll: (accessToken: string) =>
+    apiRequest<{ message: string }>('/auth/logout-all', {
+      method: 'POST',
+      token: accessToken,
+    }),
+
   forgotPassword: (email: string) =>
     apiRequest<{ message: string }>('/auth/forgot-password', {
       method: 'POST',

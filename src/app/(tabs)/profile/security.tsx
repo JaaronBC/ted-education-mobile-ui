@@ -11,7 +11,7 @@ const C = theme.colors;
 type Setup = { secret: string; uri: string };
 export default function SecurityScreen() {
   const router = useRouter();
-  const { user, getToken, replaceSession } = useSession();
+  const { user, getToken, replaceSession, signOutAll } = useSession();
   const [enabled, setEnabled] = useState(false);
   const [remaining, setRemaining] = useState(0);
   const [setup, setSetup] = useState<Setup | null>(null);
@@ -119,6 +119,37 @@ export default function SecurityScreen() {
             }}><Text style={styles.buttonText}>Disable 2FA</Text></Pressable>
           </View>
         )}
+        <Pressable
+          style={[
+            styles.button,
+            { backgroundColor: C.error },
+          ]}
+          onPress={() => {
+            Alert.alert(
+              'Sign out of all devices?',
+              'This revokes every active TED session.',
+              [
+                {
+                  text: 'Cancel',
+                  style: 'cancel',
+                },
+                {
+                  text: 'Sign out all',
+                  style: 'destructive',
+                  onPress: () => {
+                    void signOutAll()
+                      .then(() => router.replace('/welcome'))
+                      .catch(() => router.replace('/welcome'));
+                  },
+                },
+              ],
+            );
+          }}
+        >
+          <Text style={styles.buttonText}>
+            Sign out all devices
+          </Text>
+        </Pressable>
         {error ? <Text style={styles.error}>{error}</Text> : null}
         {busy ? <ActivityIndicator style={{ marginTop: 14 }} /> : null}
       </ScrollView>

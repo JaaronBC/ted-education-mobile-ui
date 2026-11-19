@@ -9,6 +9,7 @@ import { AppText as Text } from '../../components/ui/AppText';
 import { useAccessibility } from '../../contexts/AccessibilityContext';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { theme } from '../../constants/theme';
+import { ApiError } from '../../services/apiClient';
 
 const C = theme.colors;
 export default function LoginScreen() {
@@ -32,6 +33,14 @@ export default function LoginScreen() {
       const next = await authenticate(email.trim(), password);
       router.replace((next === 'mfa' ? '/(auth)/verify-2fa' : next === 'onboarding' ? '/(setup)/your-name' : '/(tabs)/home') as never);
     } catch (e) {
+      if (e instanceof ApiError && e.status === 403) {
+        router.replace({
+          pathname: '/(auth)/verify-email',
+          params: { email: email.trim().toLowerCase() },
+        } as never);
+        return;
+      }
+
       setError(e instanceof Error ? e.message : 'Unable to sign in.');
     } finally {
       setBusy(false);
