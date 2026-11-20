@@ -10,6 +10,7 @@ import {
   LockKeyhole, ShieldCheck, UserRound, type LucideIcon,
 } from "lucide-react-native";
 import SettingsRow from "../../../components/profile/SettingsRow";
+import ProfileAvatarThumb from "../../../components/profile/ProfileAvatarThumb";
 import { theme } from "../../../constants/theme";
 
 const C = theme.colors;
@@ -17,7 +18,7 @@ const C = theme.colors;
 type Setting = { title: string; description: string; icon: LucideIcon; href: Href };
 const SECTIONS: { title: string; items: Setting[] }[] = [
   { title: "YOUR DETAILS", items: [
-    { title: "Personal Information", description: "Name, photo and optional details", icon: UserRound, href: "/profile/personal" },
+    { title: "Personal Information", description: "Name, email and optional details", icon: UserRound, href: "/profile/personal" },
   ] },
   { title: "ACCOUNT SECURITY", items: [
     { title: "Two-factor authentication", description: "Authenticator and recovery codes", icon: LockKeyhole, href: "/profile/security" },
@@ -52,7 +53,7 @@ export default function ProfileScreen() {
           accessibilityRole="button"
           accessibilityLabel={anonymous ? "Guest profile, sign in to manage your account" : "Open personal information"}
         >
-          <View style={styles.avatar}><UserRound size={34} color={C.darkBlue} strokeWidth={1.8} /></View>
+          <ProfileAvatarThumb userId={anonymous ? undefined : user?.id} />
           <View style={styles.identityText}>
             <Text style={styles.identityName}>{anonymous ? "Guest" : (user?.fullName ?? "My account")}</Text>
             <View style={styles.guestBadge}><View style={styles.guestDot} /><Text style={styles.guestText}>{anonymous ? "Browsing without an account" : "Signed in"}</Text></View>

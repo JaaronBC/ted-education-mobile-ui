@@ -1,148 +1,361 @@
-import { useState } from 'react';
+// PERSONAL_STAGE1_V1: Account basics, read-only email, nullable gender, save status.
+import { useEffect, useRef, useState } from 'react';
 import {
-  Alert,Pressable,ScrollView,
-  StyleSheet,TextInput
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Redirect } from 'expo-router';
+
 import { AppText as Text } from '../../../components/ui/AppText';
 import { useSession } from '../../../contexts/SessionContext';
 import { useLanguage } from '../../../i18n/LanguageContext';
+import type { Account } from '../../../services/authApi';
+import AvatarEditor from '../../../components/profile/AvatarEditor';
 import { theme } from '../../../constants/theme';
 
-const C=theme.colors;
+const C = theme.colors;
 
-const genders=[
-  {value:'MALE',label:'Male'},
-  {value:'FEMALE',label:'Female'},
-  {value:'PREFER_NOT_TO_SAY',label:'Prefer not to say'}
-] as const;
+const genderOptions: { value: Account['gender']; label: string }[] = [
+  { value: null, label: 'Not specified' },
+  { value: 'MALE', label: 'Male' },
+  { value: 'FEMALE', label: 'Female' },
+  { value: 'PREFER_NOT_TO_SAY', label: 'Prefer not to say' },
+];
 
-export default function PersonalInformationScreen(){
-  const {user}=useSession();
-  if (!user) return <Redirect href="/(auth)/login"/>;
-  return <PersonalInformationForm key={user.id} user={user}/>;
+function normalizeName(value: string): string {
+  return value.trim().replace(/\s+/g, ' ');
 }
 
-function PersonalInformationForm({user}: {
-  user: NonNullable<ReturnType<typeof useSession>['user']>;
-}) {
-  const {updateAccountProfile}=useSession();
-  const {t}=useLanguage();
+export default function PersonalInformationScreen() {
+  const { user } = useSession();
+  if (!user) return <Redirect href="/(auth)/login" />;
+  return <PersonalInformationForm key={user.id} user={user} />;
+}
 
-  const [name,setName]=useState(user?.fullName||'');
-  const [gender,setGender]=useState<
-    'MALE'|'FEMALE'|'PREFER_NOT_TO_SAY'|null
-  >(user?.gender??null);
+function PersonalInformationForm({ user }: { user: Account }) {
+  const { updateAccountProfile } = useSession();
+  const { t } = useLanguage();
 
-  const [error,setError]=useState('');
-  const [busy,setBusy]=useState(false);
+  const [name, setName] = useState(user.fullName);
+  const [gender, setGender] = useState<Account['gender']>(user.gender);
+  const [saving, setSaving] = useState(false);
+  const [status, setStatus] = useState<'idle' | 'saved' | 'error'>('idle');
+  const [error, setError] = useState('');
 
+  const previous = useRef({
+    name: user.fullName,
+    gender: user.gender
+  });
 
-  const save=async()=>{
-    if(name.trim().length<2){
-      setError('Full name is required.');
+  // Sync server changes without overwriting unsaved edits.
+  useEffect(() => {
+    const old = previous.current;
+
+    setName(current =>
+      current === old.name ? user.fullName : current
+    );
+
+    setGender(current =>
+      current === old.gender ? user.gender : current
+    );
+
+    previous.current = {
+      name: user.fullName,
+      gender: user.gender
+    };
+  }, [user.fullName, user.gender]);
+
+  const normalized = normalizeName(name);
+
+  const changed =
+    normalized !== user.fullName ||
+    gender !== user.gender;
+
+  async function save() {
+    if (saving || !changed) return;
+
+    if (normalized.length < 2 || normalized.length > 120) {
+      setStatus('error');
+      setError('Full name must contain 2 to 120 characters.');
       return;
     }
 
-    setBusy(true);
+    setSaving(true);
+    setStatus('idle');
     setError('');
 
-    try{
-      await updateAccountProfile({
-        fullName:name.trim(),
-        ...(gender?{gender}:{})
+    try {
+      const updated = await updateAccountProfile({
+        fullName: normalized,
+        gender,
       });
 
-      Alert.alert(t('Save'),'Your profile has been updated.');
-    }catch(e){
-      setError(e instanceof Error?e.message:'Save failed');
-    }finally{
-      setBusy(false);
+      setName(updated.fullName);
+      setGender(updated.gender);
+      setStatus('saved');
+    } catch (cause) {
+      setError(
+        cause instanceof Error
+          ? cause.message
+          : 'Unable to save your details.'
+      );
+      setStatus('error');
+    } finally {
+      setSaving(false);
     }
-  };
+  }
 
-  return <SafeAreaView edges={['bottom']} style={s.page}>
-    <ScrollView contentContainerStyle={s.content}>
-      <Text style={s.heading}>
-        {t('Personal Information')}
-      </Text>
+  function discard() {
+    setName(user.fullName);
+    setGender(user.gender);
+    setError('');
+    setStatus('idle');
+  }
 
-      <Text style={s.label}>{t('Full name')} *</Text>
-
-      <TextInput
-        value={name}
-        onChangeText={setName}
-        autoComplete="name"
-        autoCapitalize="words"
-        maxLength={120}
-        style={s.input}
-      />
-
-      <Text style={s.label}>
-        {t('Gender')} ({t('Optional')})
-      </Text>
-
-      {genders.map(g=>
-        <Pressable key={g.value}
-          style={[
-            s.option,
-            gender===g.value&&s.active
-          ]}
-          onPress={()=>setGender(g.value)}>
-          <Text style={s.optionText}>{t(g.label)}</Text>
-          <Text>{gender===g.value?'✓':''}</Text>
-        </Pressable>
-      )}
-
-      {error?<Text style={s.error}>{error}</Text>:null}
-
-      <Pressable disabled={busy}
-        onPress={()=>{void save();}}
-        style={s.button}>
-        <Text style={s.buttonText}>
-          {busy?'...':t('Save changes')}
+  return (
+    <SafeAreaView edges={['bottom']} style={styles.page}>
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={styles.content}
+      >
+        <Text style={styles.heading}>
+          {t('Personal Information')}
         </Text>
-      </Pressable>
-    </ScrollView>
-  </SafeAreaView>;
+
+        <AvatarEditor />
+
+        <Text style={styles.label}>
+          {t('Email address')}
+        </Text>
+
+        <View style={styles.readOnly}>
+          <Text selectable style={styles.readOnlyText}>
+            {user.email}
+          </Text>
+        </View>
+
+        <Text style={styles.hint}>
+          Your account email is read-only here.
+          Email changes will be added separately.
+        </Text>
+
+        <Text style={styles.label}>
+          {t('Full name')} *
+        </Text>
+
+        <TextInput
+          style={styles.input}
+          accessibilityLabel={t('Full name')}
+          value={name}
+          onChangeText={value => {
+            setName(value);
+            setStatus('idle');
+          }}
+          editable={!saving}
+          autoComplete="name"
+          autoCapitalize="words"
+          autoCorrect={false}
+          maxLength={120}
+          placeholder={t('Enter your full name')}
+        />
+
+        <Text style={styles.label}>
+          {t('Gender')} ({t('Optional')})
+        </Text>
+
+        {genderOptions.map(option => (
+          <Pressable
+            key={option.value ?? 'none'}
+            accessibilityRole="radio"
+            accessibilityState={{
+              checked: gender === option.value,
+              disabled: saving
+            }}
+            disabled={saving}
+            style={[
+              styles.option,
+              gender === option.value && styles.active
+            ]}
+            onPress={() => {
+              setGender(option.value);
+              setStatus('idle');
+            }}
+          >
+            <Text style={styles.optionText}>
+              {t(option.label)}
+            </Text>
+
+            <Text style={styles.optionText}>
+              {gender === option.value ? '?' : ''}
+            </Text>
+          </Pressable>
+        ))}
+
+        {status === 'saved' && !changed ? (
+          <Text
+            accessibilityLiveRegion="polite"
+            style={styles.success}
+          >
+            Your profile has been updated.
+          </Text>
+        ) : null}
+
+        {status === 'error' ? (
+          <Text
+            accessibilityLiveRegion="polite"
+            style={styles.error}
+          >
+            {error}
+          </Text>
+        ) : null}
+
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{
+            disabled: saving || !changed
+          }}
+          disabled={saving || !changed}
+          onPress={() => { void save(); }}
+          style={[
+            styles.button,
+            (saving || !changed) && styles.disabled
+          ]}
+        >
+          {saving ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : null}
+
+          <Text style={styles.buttonText}>
+            {saving ? 'Saving...' : t('Save changes')}
+          </Text>
+        </Pressable>
+
+        {changed && !saving ? (
+          <Pressable
+            accessibilityRole="button"
+            onPress={discard}
+            style={styles.discard}
+          >
+            <Text style={styles.discardText}>
+              Discard changes
+            </Text>
+          </Pressable>
+        ) : null}
+      </ScrollView>
+    </SafeAreaView>
+  );
 }
 
-const s=StyleSheet.create({
-  page:{flex:1,backgroundColor:C.surface},
-  content:{padding:22,paddingBottom:55},
-  heading:{
-    fontSize:27,fontWeight:'700',
-    color:C.primaryText,marginBottom:20
+const styles = StyleSheet.create({
+  page: {
+    flex: 1,
+    backgroundColor: C.surface
   },
-  label:{
-    fontSize:15,fontWeight:'700',
-    color:C.primaryText,marginTop:18,marginBottom:9
+  content: {
+    padding: 22,
+    paddingBottom: 60
   },
-  input:{
-    borderWidth:1,borderColor:C.border,
-    backgroundColor:'#fff',borderRadius:12,
-    minHeight:54,paddingHorizontal:14,fontSize:17
+  heading: {
+    fontSize: 27,
+    fontWeight: '700',
+    color: C.primaryText,
+    marginBottom: 14
   },
-  option:{
-    minHeight:51,paddingHorizontal:15,
-    borderWidth:1,borderColor:C.border,
-    borderRadius:12,marginBottom:8,
-    flexDirection:'row',alignItems:'center',
-    justifyContent:'space-between',
-    backgroundColor:'#fff'
+  label: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: C.primaryText,
+    marginTop: 18,
+    marginBottom: 9
   },
-  active:{
-    backgroundColor:C.lightBlue,borderColor:C.darkBlue
+  input: {
+    borderWidth: 1,
+    borderColor: C.border,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    minHeight: 54,
+    paddingHorizontal: 14,
+    fontSize: 17,
+    color: C.primaryText
   },
-  optionText:{color:C.primaryText,fontSize:15},
-  button:{
-    minHeight:53,backgroundColor:C.darkBlue,
-    borderRadius:13,alignItems:'center',
-    justifyContent:'center',marginTop:24
+  readOnly: {
+    backgroundColor: '#EAF0F2',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: C.border,
+    minHeight: 52,
+    justifyContent: 'center',
+    paddingHorizontal: 14
   },
-  buttonText:{
-    color:'#fff',fontSize:16,fontWeight:'700'
+  readOnlyText: {
+    color: C.secondaryText,
+    fontSize: 16
   },
-  error:{color:C.error,marginTop:12}
+  hint: {
+    marginTop: 8,
+    color: C.secondaryText,
+    fontSize: 12
+  },
+  option: {
+    minHeight: 51,
+    paddingHorizontal: 15,
+    borderWidth: 1,
+    borderColor: C.border,
+    borderRadius: 12,
+    marginBottom: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#FFFFFF'
+  },
+  active: {
+    backgroundColor: C.lightBlue,
+    borderColor: C.darkBlue
+  },
+  optionText: {
+    color: C.primaryText,
+    fontSize: 15
+  },
+  button: {
+    minHeight: 53,
+    backgroundColor: C.darkBlue,
+    borderRadius: 13,
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 24
+  },
+  disabled: {
+    opacity: 0.5
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '700'
+  },
+  success: {
+    color: C.success,
+    marginTop: 14,
+    fontSize: 14
+  },
+  error: {
+    color: C.error,
+    marginTop: 14,
+    fontSize: 14
+  },
+  discard: {
+    alignItems: 'center',
+    paddingVertical: 14
+  },
+  discardText: {
+    color: C.darkBlue,
+    fontWeight: '600',
+    fontSize: 14
+  },
 });

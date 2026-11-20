@@ -17,6 +17,7 @@ export default function ProfileLayout() {
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="personal" options={{ title: t('Personal Information') }} />
       <Stack.Screen name="security" options={{ title: t('Account Security') }} />
+      <Stack.Screen name="change-password" options={{ title: "Change Password" }} />
       <Stack.Screen name="language" options={{ title: t('Language') }} />
       <Stack.Screen name="accessibility" options={{ title: t('Accessibility') }} />
       <Stack.Screen name="data" options={{ title: t('Data Management') }} />

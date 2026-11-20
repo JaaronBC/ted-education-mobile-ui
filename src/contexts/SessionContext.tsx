@@ -69,6 +69,7 @@ type SessionValue = {
   replaceSession: (value: FullSession) => Promise<void>;
   signOut: () => Promise<void>;
   signOutAll: () => Promise<void>;
+  clearLocalSession: () => Promise<void>;
 };
 
 const SessionContext =
@@ -331,6 +332,18 @@ export function SessionProvider({
     setPendingChallenge(null);
   }
 
+  async function clearLocalSession() {
+    // Server already revoked every session.
+    // Never attempt another remote logout here.
+    beginSessionTermination();
+
+    setUser(null);
+    setExpiresAt(null);
+    setPendingChallenge(null);
+
+    await clearSessionTokens();
+  }
+
   async function signOut() {
     const accessPending =
       getToken().catch(() => null);
@@ -361,37 +374,20 @@ export function SessionProvider({
   }
 
   async function signOutAll() {
-    const accessPending =
-      getToken().catch(() => null);
+    // Confirm server revocation before clearing local credentials.
+    const access = await getToken();
+
+    if (!access) {
+      throw new Error('Cannot verify your session. Sign in again and retry.');
+    }
+
+    await authApi.logoutAll(access);
 
     beginSessionTermination();
-
     setUser(null);
     setExpiresAt(null);
     setPendingChallenge(null);
-
-    try {
-      const access =
-        (await accessPending) ||
-        await storedAccessToken();
-
-      if (!access) {
-        throw new Error('No valid access token.');
-      }
-
-      await authApi.logoutAll(access);
-    } catch {
-      console.warn(
-        'Remote sign-out of all devices ' +
-        'could not be confirmed.',
-      );
-
-      throw new Error(
-        'Server revocation could not be confirmed.',
-      );
-    } finally {
-      await clearSessionTokens();
-    }
+    await clearSessionTokens();
   }
 
   const role: UserRole = !user
@@ -421,6 +417,7 @@ export function SessionProvider({
         updateAccountProfile,
         signOut,
         signOutAll,
+        clearLocalSession,
       }}
     >
       {children}

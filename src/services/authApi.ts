@@ -26,7 +26,7 @@ export type LoginResponse = MfaLoginResponse | FullLoginResponse;
 
 export type ProfileUpdate = {
   fullName?: string;
-  gender?: Exclude<Account['gender'],null>;
+  gender?: Account['gender'];
   preferredLanguage?: Account['preferredLanguage'];
   fontScale?: number;
   highContrast?: boolean;
@@ -44,6 +44,11 @@ export const authApi = {
     apiRequest<{ secret: string; uri: string }>('/auth/mfa/setup', { method: 'POST', token }),
   mfaEnable: (token: string, code: string) =>
     apiRequest<FullLoginResponse & { recoveryCodes: string[] }>('/auth/mfa/enable', { method: 'POST', token, body: { code } }),
+  mfaRegenerateRecoveryCodes: (token: string, code: string) =>
+    apiRequest<{ recoveryCodes: string[]; recoveryCodesRemaining: number }>(
+      '/auth/mfa/recovery/regenerate',
+      { method: 'POST', token, body: { code } }
+    ),
   mfaDisable: (token: string, code: string) =>
     apiRequest<FullLoginResponse>('/auth/mfa/disable', { method: 'POST', token, body: { code } }),
   mfaVerify: (challengeToken: string, code: string) =>
@@ -76,6 +81,17 @@ export const authApi = {
     apiRequest<{ message: string }>('/auth/logout-all', {
       method: 'POST',
       token: accessToken,
+    }),
+
+  changePassword: (
+    token: string,
+    currentPassword: string,
+    newPassword: string
+  ) =>
+    apiRequest<{ message: string }>('/auth/change-password', {
+      method: 'POST',
+      token,
+      body: { currentPassword, newPassword },
     }),
 
   forgotPassword: (email: string) =>
