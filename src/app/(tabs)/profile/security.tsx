@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, type Href } from 'expo-router';
 import QRCode from 'react-native-qrcode-svg';
 import { AppText as Text } from '../../../components/ui/AppText';
 import { useSession } from '../../../contexts/SessionContext';
@@ -11,27 +11,58 @@ const C = theme.colors;
 type Setup = { secret: string; uri: string };
 export default function SecurityScreen() {
   const router = useRouter();
-  const { user, getToken, replaceSession } = useSession();
-  const [enabled, setEnabled] = useState(false);
+  const { user, getToken, replaceSession, signOutAll } = useSession();
+  const [mfaStatus, setMfaStatus] = useState<'loading' | 'enabled' | 'disabled' | 'error'>('loading');
+  const [statusError, setStatusError] = useState('');
+  const [statusReload, setStatusReload] = useState(0);
   const [remaining, setRemaining] = useState(0);
   const [setup, setSetup] = useState<Setup | null>(null);
   const [recoveryCodes, setRecoveryCodes] = useState<string[]>([]);
+  const [recoveryTotp, setRecoveryTotp] = useState('');
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   useEffect(() => {
     let active = true;
+
     if (!user) return;
+
+    setMfaStatus('loading');
+    setStatusError('');
+
     void (async () => {
       try {
         const token = await getToken();
-        if (!token) throw Error('Sign in again');
+
+        if (!token) {
+          throw new Error('Sign in again');
+        }
+
         const info = await authApi.mfaStatus(token);
-        if (active) { setEnabled(info.enabled); setRemaining(info.recoveryCodesRemaining); }
-      } catch (e) { if (active) setError(e instanceof Error ? e.message : 'Cannot load security settings'); }
+
+        if (active) {
+          setRemaining(info.recoveryCodesRemaining);
+          setMfaStatus(
+            info.enabled ? 'enabled' : 'disabled'
+          );
+        }
+      } catch (e) {
+        if (active) {
+          setRemaining(0);
+          setMfaStatus('error');
+          setStatusError(
+            e instanceof Error
+              ? e.message
+              : 'Cannot load security settings'
+          );
+        }
+      }
     })();
-    return () => { active = false; };
-  }, [user, getToken]);
+
+    return () => {
+      active = false;
+    };
+  }, [user?.id, getToken, statusReload]);
 
   async function beginSetup() {
     setBusy(true); setError('');
@@ -52,10 +83,44 @@ export default function SecurityScreen() {
       await replaceSession(result);
       setRecoveryCodes(result.recoveryCodes);
       setRemaining(result.recoveryCodes.length);
-      setEnabled(true); setSetup(null); setCode('');
+      setMfaStatus('enabled'); setSetup(null); setCode('');
     } catch (e) { setError(e instanceof Error ? e.message : 'Cannot enable 2FA'); }
     finally { setBusy(false); }
   }
+  async function regenerateRecoveryCodes() {
+    if (busy || mfaStatus !== 'enabled' || recoveryCodes.length > 0) return;
+
+    const otp = recoveryTotp.trim();
+
+    if (!/^[0-9]{6}$/.test(otp)) {
+      setError('Enter the current 6-digit Authenticator code.');
+      return;
+    }
+
+    setBusy(true);
+    setError('');
+
+    try {
+      const token = await getToken();
+      if (!token) throw Error('Sign in again');
+
+      const result = await authApi.mfaRegenerateRecoveryCodes(token, otp);
+
+      setRecoveryCodes(result.recoveryCodes);
+      setRemaining(result.recoveryCodesRemaining);
+      setRecoveryTotp('');
+    } catch (e) {
+      setError(
+        e instanceof Error
+          ? e.message
+          : 'Could not confirm recovery code rotation. Refresh 2FA status.'
+      );
+      setStatusReload(value => value + 1);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function disable() {
     setBusy(true); setError('');
     try {
@@ -63,11 +128,36 @@ export default function SecurityScreen() {
       if (!token) throw Error('Sign in again');
       const result = await authApi.mfaDisable(token, code.trim());
       await replaceSession(result);
-      setEnabled(false); setRemaining(0); setCode(''); setRecoveryCodes([]);
+      setMfaStatus('disabled'); setRemaining(0); setCode(''); setRecoveryCodes([]);
       Alert.alert('Two-factor authentication disabled', 'Your account no longer requires an authenticator code.');
     } catch (e) { setError(e instanceof Error ? e.message : 'Cannot disable 2FA'); }
     finally { setBusy(false); }
   }
+  async function handleSignOutAll() {
+    if (busy) return;
+
+    setBusy(true);
+    setError('');
+
+    try {
+      await signOutAll();
+      router.replace('/welcome');
+    } catch (error) {
+      const message = error instanceof Error
+        ? error.message
+        : 'Please check your connection and try again.';
+
+      setError('Could not confirm sign-out on all devices. ' + message);
+
+      Alert.alert(
+        'Sign-out not confirmed',
+        'Other devices might still be signed in. Check your connection and try again.',
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
   if (!user) return (
     <SafeAreaView style={styles.page}>
       <Text style={styles.text}>Sign in to manage account security.</Text>
@@ -77,8 +167,70 @@ export default function SecurityScreen() {
   return (
     <SafeAreaView edges={['bottom']} style={styles.page}>
       <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.card}>
+          <Text style={styles.heading}>Password</Text>
+
+          <Text style={styles.text}>
+            Update your password and sign out of every device.
+          </Text>
+
+          <Pressable
+            accessibilityRole="button"
+            style={styles.button}
+            onPress={() =>
+              router.push('/profile/change-password' as Href)
+            }
+          >
+            <Text style={styles.buttonText}>
+              Change Password
+            </Text>
+          </Pressable>
+        </View>
         <Text style={styles.title}>Authenticator 2FA</Text>
-        <Text style={styles.text}>Status: {enabled ? 'Enabled' : 'Not enabled'}</Text>
+        <Text style={styles.text}>
+          Status: {mfaStatus === 'enabled'
+            ? 'Enabled'
+            : mfaStatus === 'disabled'
+              ? 'Not enabled'
+              : mfaStatus === 'loading'
+                ? 'Checking...'
+                : 'Unavailable'}
+        </Text>
+
+        {mfaStatus === 'loading' ? (
+          <ActivityIndicator
+            accessibilityLabel="Checking two-factor authentication status"
+          />
+        ) : null}
+
+        {mfaStatus === 'error' ? (
+          <View style={styles.card}>
+            <Text style={styles.error}>
+              Could not verify 2FA status. {statusError}
+            </Text>
+
+            <Text style={styles.text}>
+              Enable and disable controls are unavailable
+              until the server responds.
+            </Text>
+
+            <Pressable
+              accessibilityRole="button"
+              disabled={busy}
+              style={[
+                styles.button,
+                { opacity: busy ? 0.6 : 1 }
+              ]}
+              onPress={() =>
+                setStatusReload(value => value + 1)
+              }
+            >
+              <Text style={styles.buttonText}>
+                Retry security status
+              </Text>
+            </Pressable>
+          </View>
+        ) : null}
         <Text style={styles.text}>Use Google Authenticator, Microsoft Authenticator, or another TOTP-compatible app.</Text>
         {recoveryCodes.length > 0 ? (
           <View style={styles.card}>
@@ -88,12 +240,12 @@ export default function SecurityScreen() {
             <Pressable style={styles.button} onPress={() => setRecoveryCodes([])}><Text style={styles.buttonText}>I saved these codes</Text></Pressable>
           </View>
         ) : null}
-        {!enabled && !setup && (
+        {mfaStatus === 'disabled' && !setup && (
           <Pressable style={styles.button} disabled={busy} onPress={() => { void beginSetup(); }}>
             <Text style={styles.buttonText}>{busy ? 'Loading...' : 'Enable two-factor authentication'}</Text>
           </Pressable>
         )}
-        {!enabled && setup && (
+        {mfaStatus === 'disabled' && setup && (
           <View style={styles.card}>
             <Text style={styles.heading}>1. Add TED to your Authenticator</Text>
             <View style={styles.qr}><QRCode value={setup.uri} size={205} /></View>
@@ -105,7 +257,54 @@ export default function SecurityScreen() {
             <Pressable onPress={() => { setSetup(null); setCode(''); }}><Text style={styles.link}>Cancel setup</Text></Pressable>
           </View>
         )}
-        {enabled && recoveryCodes.length === 0 && (
+        {mfaStatus === 'enabled' && recoveryCodes.length === 0 && (
+          <View style={styles.card}>
+            <Text style={styles.heading}>Recovery codes</Text>
+            <Text style={styles.text}>
+              Unused recovery codes: {remaining}
+            </Text>
+            <Text style={styles.text}>
+              Lost your recovery codes? Generate 8 new ones.
+              All previous codes will stop working immediately.
+              Have a safe place ready to save the new codes.
+            </Text>
+            <TextInput
+              style={styles.input}
+              value={recoveryTotp}
+              onChangeText={setRecoveryTotp}
+              keyboardType="number-pad"
+              maxLength={6}
+              autoComplete="off"
+              placeholder="Current 6-digit Authenticator code"
+              accessibilityLabel="Authenticator code for new recovery codes"
+            />
+            <Pressable
+              accessibilityRole="button"
+              disabled={busy || !/^[0-9]{6}$/.test(recoveryTotp.trim())}
+              style={[
+                styles.button,
+                { opacity: busy || !/^[0-9]{6}$/.test(recoveryTotp.trim()) ? 0.5 : 1 }
+              ]}
+              onPress={() => Alert.alert(
+                'Replace all recovery codes?',
+                'Every existing recovery code will become invalid. Continue only if you can save the new codes.',
+                [
+                  { text: 'Cancel', style: 'cancel' },
+                  {
+                    text: 'Replace codes',
+                    style: 'destructive',
+                    onPress: () => { void regenerateRecoveryCodes(); }
+                  }
+                ]
+              )}
+            >
+              <Text style={styles.buttonText}>
+                Generate new recovery codes
+              </Text>
+            </Pressable>
+          </View>
+        )}
+        {mfaStatus === 'enabled' && recoveryCodes.length === 0 && (
           <View style={styles.card}>
             <Text style={styles.text}>Unused recovery codes: {remaining}</Text>
             <Text style={styles.heading}>Disable 2FA</Text>
@@ -119,6 +318,34 @@ export default function SecurityScreen() {
             }}><Text style={styles.buttonText}>Disable 2FA</Text></Pressable>
           </View>
         )}
+        <Pressable
+          disabled={busy}
+          style={[
+            styles.button,
+            { backgroundColor: C.error, opacity: busy ? 0.6 : 1 },
+          ]}
+          onPress={() => {
+            Alert.alert(
+              'Sign out of all devices?',
+              'This revokes every active TED session.',
+              [
+                {
+                  text: 'Cancel',
+                  style: 'cancel',
+                },
+                {
+                  text: 'Sign out all',
+                  style: 'destructive',
+                  onPress: () => { void handleSignOutAll(); },
+                },
+              ],
+            );
+          }}
+        >
+          <Text style={styles.buttonText}>
+            Sign out all devices
+          </Text>
+        </Pressable>
         {error ? <Text style={styles.error}>{error}</Text> : null}
         {busy ? <ActivityIndicator style={{ marginTop: 14 }} /> : null}
       </ScrollView>

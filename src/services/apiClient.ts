@@ -1,3 +1,5 @@
+import { getValidAccessToken, refreshAccessToken, storedAccessToken } from './sessionTokens';
+
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL?.trim().replace(/\/+$/, '');
 
 export class ApiError extends Error {
@@ -32,15 +34,26 @@ export async function apiRequest<T>(
   const timeout = setTimeout(() => controller.abort(), 12000);
 
   try {
-    const response = await fetch(`${BASE_URL}${path}`, {
+    let token = options.token;
+
+    const mayRefresh = Boolean(
+      token && token === await storedAccessToken()
+    );
+
+    if (mayRefresh) {
+      token = (await getValidAccessToken()) ?? token;
+    }
+
+    const send = (authToken?: string) =>
+      fetch(`${BASE_URL}${path}`, {
       method: options.method ?? 'GET',
       headers: {
         Accept: 'application/json',
         ...(options.body === undefined
           ? {}
           : { 'Content-Type': 'application/json' }),
-        ...(options.token
-          ? { Authorization: `Bearer ${options.token}` }
+        ...(authToken
+          ? { Authorization: `Bearer ${authToken}` }
           : {}),
       },
       body: options.body === undefined
@@ -48,6 +61,19 @@ export async function apiRequest<T>(
         : JSON.stringify(options.body),
       signal: controller.signal,
     });
+
+    let response = await send(token);
+
+    if (
+      response.status === 401 &&
+      token &&
+      mayRefresh &&
+      !path.startsWith('/auth/refresh') &&
+      !path.startsWith('/auth/logout')
+    ) {
+      const next = await refreshAccessToken();
+      response = await send(next);
+    }
 
     const raw = await response.text();
     let data: unknown = null;

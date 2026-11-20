@@ -6,7 +6,6 @@ import { useRouter } from 'expo-router';
 import { ArrowLeft, ChevronDown, Check, UserRound } from 'lucide-react-native';
 import { AppText as Text } from '../../components/ui/AppText';
 import { useAccessibility } from '../../contexts/AccessibilityContext';
-import { useSession } from '../../contexts/SessionContext';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { authApi, type RegisterInput } from '../../services/authApi';
 import { ApiError } from '../../services/apiClient';
@@ -51,7 +50,6 @@ export default function RegisterScreen() {
   const router = useRouter();
   const { fontScale } = useAccessibility();
   const {t,language}=useLanguage();
-  const { login: signInNewUser } = useSession();
   const [name, setName] = useState('');
   const [gender, setGender] = useState('');
   const [expanded, setExpanded] = useState(false);
@@ -84,13 +82,59 @@ export default function RegisterScreen() {
         ...(selectedGender ? { gender: selectedGender } : {}),
       });
 
-      const next = await signInNewUser(email.trim(),password);
-      router.replace((next === 'mfa'
-        ? '/(auth)/verify-2fa' : '/(setup)/your-name') as never);
+      let requestFailed = false;
+
+      try {
+        await authApi.requestEmailVerification(email.trim());
+      } catch {
+        requestFailed = true;
+      }
+
+      router.replace({
+        pathname: '/(auth)/verify-email',
+        params: {
+          email: email.trim().toLowerCase(),
+          requestFailed: requestFailed ? '1' : '0',
+        },
+      } as never);
     } catch (e) {
       if (e instanceof ApiError && e.status === 409) {
         setDuplicateEmail(true);
-        setError(duplicateAccountText[language].message);
+        setError('This email is already registered.');
+
+        Alert.alert(
+          'Account already exists',
+          'This email is already registered. Sign in or reset your password.',
+          [
+            {
+              text: 'Sign In',
+              onPress: () =>
+                router.replace('/(auth)/login'),
+            },
+            {
+              text: 'Reset Password',
+              onPress: () =>
+                router.push('/(auth)/forgot-password'),
+            },
+            {
+              text: 'Cancel',
+              style: 'cancel',
+            },
+          ],
+        );
+      } else if (e instanceof ApiError && e.status === 429) {
+        setDuplicateEmail(false);
+
+        const message =
+          'Too many registration attempts. Please wait about one minute and try again.';
+
+        setError(message);
+
+        Alert.alert(
+          'Too many attempts',
+          message,
+          [{ text: 'OK' }],
+        );
       } else {
         setDuplicateEmail(false);
         setError(
