@@ -100,7 +100,41 @@ export default function RegisterScreen() {
     } catch (e) {
       if (e instanceof ApiError && e.status === 409) {
         setDuplicateEmail(true);
-        setError(duplicateAccountText[language].message);
+        setError('This email is already registered.');
+
+        Alert.alert(
+          'Account already exists',
+          'This email is already registered. Sign in or reset your password.',
+          [
+            {
+              text: 'Sign In',
+              onPress: () =>
+                router.replace('/(auth)/login'),
+            },
+            {
+              text: 'Reset Password',
+              onPress: () =>
+                router.push('/(auth)/forgot-password'),
+            },
+            {
+              text: 'Cancel',
+              style: 'cancel',
+            },
+          ],
+        );
+      } else if (e instanceof ApiError && e.status === 429) {
+        setDuplicateEmail(false);
+
+        const message =
+          'Too many registration attempts. Please wait about one minute and try again.';
+
+        setError(message);
+
+        Alert.alert(
+          'Too many attempts',
+          message,
+          [{ text: 'OK' }],
+        );
       } else {
         setDuplicateEmail(false);
         setError(
