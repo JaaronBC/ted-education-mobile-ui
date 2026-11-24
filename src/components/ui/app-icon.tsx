@@ -17,6 +17,8 @@ import {
   Scan,
   ClipboardList,
   FileText,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react-native";
 import type { ColorValue } from "react-native";
 export type AppIconName = keyof typeof icons;
@@ -48,6 +50,8 @@ const icons = {
   Medications: Pill,
   Treatments: ClipboardList,
   Records: FileText,
+  Dropdown: ChevronDown,
+  OpenDropdown: ChevronUp,
 };
 
 const AppIcon = (props: AppIconProps) => {
