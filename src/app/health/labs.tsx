@@ -1,11 +1,27 @@
-import { Text, View } from "react-native";
+import { Text, View, StyleSheet } from "react-native";
+import LabPdfUpload from "@/constants/health/lab-pdf-upload";
+import { theme } from "@/constants/theme";
 
 export default function LabsScreen() {
   return (
-    <View className="flex-1 bg-white items-center justify-center">
-      <Text className="mt-3 text-center text-[13px] font-medium tracking-[5px] text-[#58708C]">
-        labs
-      </Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Labs</Text>
+      <LabPdfUpload />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: theme.colors.background,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: theme.layout.screenPadding,
+    gap: theme.spacing.lg,
+  },
+  title: {
+    ...theme.typography.title,
+    textAlign: "center",
+  },
+});
