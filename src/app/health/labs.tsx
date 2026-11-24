@@ -3,7 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import LabHistoryCard from "@/components/health/labs/lab-history-card";
 import LabMeasurementSelector from "@/components/health/labs/lab-measurement-selector";
 import LabResultRow from "@/components/health/labs/lab-result-row";
-import LabReviewDisplay from "@/components/health/labs/lab-review-display";
+import LabReviewModal from "@/components/health/labs/lab-review-modal";
 import LabTrendCard from "@/components/health/labs/lab-trend-card";
 import AppButton from "@/components/ui/app-button";
 import AppCard from "@/components/ui/app-card";
@@ -159,7 +159,7 @@ export default function LabsScreen() {
       </ScrollView>
 
       {reviewVisible && (
-        <LabReviewDisplay
+        <LabReviewModal
           visible={reviewVisible}
           initialDraft={mockReviewDraft}
           onCancel={() => setReviewVisible(false)}

@@ -30,7 +30,7 @@ type LabReviewModalProps = {
   onSave: (report: LabReport) => void;
 };
 
-export default function LabReviewDisplay({
+export default function LabReviewModal({
   visible,
   initialDraft,
   onCancel,
