@@ -1,3 +1,4 @@
+import { useLanguage as useLocale10 , useLanguage,LANGUAGES } from '@/i18n/LanguageContext';
 import { router } from 'expo-router';
 import {
   Image, ImageBackground, Pressable,
@@ -5,14 +6,15 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppText as Text } from '../../components/ui/AppText';
-import { useLanguage,LANGUAGES } from '../../i18n/LanguageContext';
 
 export default function WelcomeScreen(){
+  const { tr: tr10 } = useLocale10();
+
   const {language,t}=useLanguage();
 
   return <SafeAreaView style={s.page}>
     <ScrollView contentContainerStyle={s.wrap}>
-      <Pressable style={s.lang} onPress={()=>router.push('/language')}>
+      <Pressable accessibilityRole="button" style={s.lang} onPress={()=>router.push('/language')}>
         <Text style={s.langText}>
           {LANGUAGES.find(x=>x.code===language)?.name} ▾
         </Text>
@@ -24,24 +26,24 @@ export default function WelcomeScreen(){
       />
 
       <Text style={s.eyebrow}>YOUR GUIDE TO</Text>
-      <Text style={s.heading}>Thyroid Eye Disease</Text>
+      <Text style={s.heading}>{tr10("Thyroid Eye Disease")}</Text>
 
       <Text style={s.description}>
         Learn about TED, track changes, and prepare
         information for your care team.
       </Text>
 
-      <Pressable style={s.primary}
+      <Pressable accessibilityRole="button" style={s.primary}
         onPress={()=>router.push('/(auth)/register')}>
         <Text style={s.primaryText}>{t('Create Account')}</Text>
       </Pressable>
 
-      <Pressable style={s.secondary}
+      <Pressable accessibilityRole="button" style={s.secondary}
         onPress={()=>router.push('/(auth)/login')}>
         <Text style={s.secondaryText}>{t('Sign In')}</Text>
       </Pressable>
 
-      <Pressable style={s.guest}
+      <Pressable accessibilityRole="button" style={s.guest}
         onPress={()=>router.replace('/(tabs)/home')}>
         <Text style={s.guestText}>{t('Explore as Guest')}</Text>
       </Pressable>
@@ -50,9 +52,7 @@ export default function WelcomeScreen(){
         source={require('../../../assets/images/welcome-hawaii.jpg')}
         style={s.photo} resizeMode="cover">
         <View style={s.tint}>
-          <Text style={s.disclaimer}>
-            This app is for educational purposes only.
-          </Text>
+          <Text style={s.disclaimer}>{tr10("This app is for educational purposes only.")} </Text>
         </View>
       </ImageBackground>
     </ScrollView>

@@ -1,12 +1,14 @@
+import { useLanguage as useLocale10 , LANGUAGES,useLanguage } from '@/i18n/LanguageContext';
 import { useState } from 'react';
 import {
   Alert,Pressable,ScrollView,StyleSheet
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppText as Text } from '../../../components/ui/AppText';
-import { LANGUAGES,useLanguage } from '../../../i18n/LanguageContext';
 
 export default function LanguageSettingsScreen(){
+  const { tr: tr10 } = useLocale10();
+
   const {language,setLanguage,t}=useLanguage();
   const [busy,setBusy]=useState(false);
 
@@ -33,8 +35,8 @@ export default function LanguageSettingsScreen(){
               await setLanguage(l.code);
             }catch{
               Alert.alert(
-                'Error',
-                'Could not sync language to your account.'
+                tr10("Error"),
+                tr10("Could not sync language to your account.")
               );
             }finally{
               setBusy(false);

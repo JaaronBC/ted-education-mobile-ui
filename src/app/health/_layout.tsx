@@ -1,17 +1,27 @@
+import { useLanguage as useLocale10 } from '@/i18n/LanguageContext';
 import { Text, View, StyleSheet, ScrollView, Pressable } from "react-native";
 import { Slot, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AppCard from "@/components/ui/app-card";
 import { theme } from "@/constants/theme";
 import SectionHeader from "@/components/ui/section-header";
-import { healthCategories } from "@/constants/health/health-categories";
+import { healthCategories } from "@/features/health/constants/health-categories";
+
+import { useSession } from '@/contexts/SessionContext';
+import { sessionGeneration } from '@/services/sessionTokens';
 
 export default function HealthLayout() {
+  const { tr: tr10 } = useLocale10();
+
+  const { user } = useSession();
+
+  const healthSessionKey =
+    (user?.id ?? 'guest') + ':' + sessionGeneration();
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <View style={styles.navContainer}>
-          <SectionHeader title="My Health" BackButton backRoute="/health" />
+          <SectionHeader title={tr10("My Health")} BackButton backRoute="/health" />
 
           <ScrollView
             horizontal
@@ -19,7 +29,7 @@ export default function HealthLayout() {
             contentContainerStyle={styles.tabsContainer}
           >
             {healthCategories.map((category) => (
-              <Pressable
+              <Pressable accessibilityRole="button"
                 key={category.id}
                 onPress={() => router.push(category.route)}
                 style={styles.card}
@@ -32,7 +42,19 @@ export default function HealthLayout() {
           </ScrollView>
         </View>
 
-        <View style={styles.content}>
+        <Text
+          style={{
+            paddingHorizontal: 20,
+            paddingVertical: 12,
+            color: theme.colors.secondaryText,
+            fontSize: 13,
+          }}
+        >{tr10("Demo data only. Do not enter real patient information. Changes are not saved to your account.")} </Text>
+
+        <View
+          key={healthSessionKey}
+          style={styles.content}
+        >
           <Slot />
         </View>
       </View>

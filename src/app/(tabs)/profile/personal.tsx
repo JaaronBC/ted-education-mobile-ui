@@ -1,3 +1,4 @@
+import { useLanguage as useLocale12 , useLanguage as useLocale10 , useLanguage } from '@/i18n/LanguageContext';
 // PERSONAL_STAGE1_V1: Account basics, read-only email, nullable gender, save status.
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -13,9 +14,8 @@ import { Redirect } from 'expo-router';
 
 import { AppText as Text } from '../../../components/ui/AppText';
 import { useSession } from '../../../contexts/SessionContext';
-import { useLanguage } from '../../../i18n/LanguageContext';
 import type { Account } from '../../../services/authApi';
-import AvatarEditor from '../../../components/profile/AvatarEditor';
+import AvatarEditor from '../../../features/profile/components/AvatarEditor';
 import { theme } from '../../../constants/theme';
 
 const C = theme.colors;
@@ -38,6 +38,10 @@ export default function PersonalInformationScreen() {
 }
 
 function PersonalInformationForm({ user }: { user: Account }) {
+  const { t: t12 } = useLocale12();
+
+  const { tr: tr10 } = useLocale10();
+
   const { updateAccountProfile } = useSession();
   const { t } = useLanguage();
 
@@ -139,10 +143,7 @@ function PersonalInformationForm({ user }: { user: Account }) {
           </Text>
         </View>
 
-        <Text style={styles.hint}>
-          Your account email is read-only here.
-          Email changes will be added separately.
-        </Text>
+        <Text style={styles.hint}>{t12("Your account email is read-only here. Email changes will be added separately.")}</Text>
 
         <Text style={styles.label}>
           {t('Full name')} *
@@ -200,9 +201,7 @@ function PersonalInformationForm({ user }: { user: Account }) {
           <Text
             accessibilityLiveRegion="polite"
             style={styles.success}
-          >
-            Your profile has been updated.
-          </Text>
+          >{tr10("Your profile has been updated.")} </Text>
         ) : null}
 
         {status === 'error' ? (
@@ -210,7 +209,7 @@ function PersonalInformationForm({ user }: { user: Account }) {
             accessibilityLiveRegion="polite"
             style={styles.error}
           >
-            {error}
+            {t12(error)}
           </Text>
         ) : null}
 
@@ -231,7 +230,7 @@ function PersonalInformationForm({ user }: { user: Account }) {
           ) : null}
 
           <Text style={styles.buttonText}>
-            {saving ? 'Saving...' : t('Save changes')}
+            {saving ? tr10("Saving...") : t('Save changes')}
           </Text>
         </Pressable>
 
@@ -241,9 +240,7 @@ function PersonalInformationForm({ user }: { user: Account }) {
             onPress={discard}
             style={styles.discard}
           >
-            <Text style={styles.discardText}>
-              Discard changes
-            </Text>
+            <Text style={styles.discardText}>{tr10("Discard changes")} </Text>
           </Pressable>
         ) : null}
       </ScrollView>

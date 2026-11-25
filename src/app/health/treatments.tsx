@@ -1,12 +1,13 @@
+import { useLanguage as useLocale10 } from '@/i18n/LanguageContext';
 import { useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import TreatmentCard from "@/components/health/treatments/treatment-card";
-import TreatmentDetailsModal from "@/components/health/treatments/treatment-details-modal";
+import TreatmentCard from "@/features/health/components/treatments/treatment-card";
+import TreatmentDetailsModal from "@/features/health/components/treatments/treatment-details-modal";
 import TreatmentFormModal, {
   type TreatmentFormMode,
   type TreatmentFormSubmission,
-} from "@/components/health/treatments/treatment-form-modal";
-import TreatmentNoteModal from "@/components/health/treatments/treatment-note-modal";
+} from "@/features/health/components/treatments/treatment-form-modal";
+import TreatmentNoteModal from "@/features/health/components/treatments/treatment-note-modal";
 import AppButton from "@/components/ui/app-button";
 import AppCard from "@/components/ui/app-card";
 import ScreenContainer from "@/components/ui/screen-container";
@@ -14,12 +15,12 @@ import {
   treatmentDefinitions,
   type PatientTreatment,
   type TreatmentNote,
-} from "@/constants/health/treatments";
+} from "@/features/health/constants/treatments";
 import { theme } from "@/constants/theme";
 import {
   mockPatientTreatments,
   mockTreatmentNotes,
-} from "@/mockdata/treatments";
+} from "@/features/health/mockdata/treatments";
 
 type TreatmentsView = "current" | "history";
 type ActiveModal = "none" | "form" | "details" | "note";
@@ -30,6 +31,8 @@ function sortByDateDescending(left: string, right: string): number {
 }
 
 export default function TreatmentsScreen() {
+  const { tr: tr10 } = useLocale10();
+
   const [treatments, setTreatments] = useState<PatientTreatment[]>(
     mockPatientTreatments,
   );
@@ -248,11 +251,11 @@ export default function TreatmentsScreen() {
             Track ongoing and previous treatments, plus personal side effect
             experiences.
           </Text>
-          <AppButton title="Add Treatment" onPress={openCreateTreatmentModal} />
+          <AppButton title={tr10("Add Treatment")} onPress={openCreateTreatmentModal} />
         </View>
 
         <AppCard style={styles.overviewCard}>
-          <Text style={styles.sectionTitle}>Treatment Overview</Text>
+          <Text style={styles.sectionTitle}>{tr10("Treatment Overview")}</Text>
           <Text
             style={styles.overviewText}
           >{`Current records: ${currentTreatments.length}`}</Text>
@@ -305,7 +308,7 @@ export default function TreatmentsScreen() {
                   Add a treatment record to track ongoing care.
                 </Text>
                 <AppButton
-                  title="Add Treatment"
+                  title={tr10("Add Treatment")}
                   onPress={openCreateTreatmentModal}
                 />
               </AppCard>

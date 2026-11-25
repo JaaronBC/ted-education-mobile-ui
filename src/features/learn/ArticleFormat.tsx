@@ -1,5 +1,5 @@
-import { Text, View, ScrollView } from 'react-native';
-import { Pressable } from 'react-native';
+import { useLanguage as useLocale10 } from '@/i18n/LanguageContext';
+import { Text, View, ScrollView , Pressable } from 'react-native';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -13,6 +13,8 @@ type ArticleProps = {
 };
 
 export default function ArticleFormat({ article }: ArticleProps) {
+  const { tr: tr10 } = useLocale10();
+
     const nextkey = article.key + 1;
     const nextarticle = Articles.find((article) => article.key === nextkey);
     return (
@@ -26,7 +28,7 @@ export default function ArticleFormat({ article }: ArticleProps) {
                                 <View className="w-full flex-row items-center justify-between">
                                     <Pressable
                                         accessibilityRole="button"
-                                        accessibilityLabel="Back"
+                                        accessibilityLabel={tr10("Back")}
                                         onPress={() => router.back()}
                                         className="h-10 w-10 items-center justify-center"
                                     >
@@ -64,7 +66,7 @@ export default function ArticleFormat({ article }: ArticleProps) {
                                     </Text>
                                 ))}
                                 <View className="mb-5"></View>
-                                {nextkey != 6 && nextarticle && (
+                                {nextkey !== 6 && nextarticle && (
                                     <NextCard
                                         key={nextarticle.key}
                                         thumbnail={nextarticle.thumbnail}

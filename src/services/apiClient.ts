@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import {
   getValidAccessToken,
   refreshAccessToken,
@@ -71,6 +72,7 @@ export async function apiRequest<T>(
 
     const mayRefresh = Boolean(
       token &&
+      !path.startsWith('/auth/logout') &&
       token === await storedAccessToken()
     );
 
@@ -98,6 +100,9 @@ export async function apiRequest<T>(
           ...(authToken
             ? {
                 Authorization: `Bearer ${authToken}`,
+                ...(['android', 'ios', 'web'].includes(Platform.OS)
+                  ? { 'X-TED-Platform': Platform.OS }
+                  : {}),
               }
             : {}),
         },

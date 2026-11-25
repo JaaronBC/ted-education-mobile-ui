@@ -104,7 +104,7 @@ test('account API supports profile updates', () => {
 
 test('existing 2FA entry remains available', () => {
   const security = read(
-    'src/app/(tabs)/profile/security.tsx'
+    'src/features/profile/screens/SecurityScreen.tsx'
   );
 
   assert.match(

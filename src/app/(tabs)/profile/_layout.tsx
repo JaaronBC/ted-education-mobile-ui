@@ -16,12 +16,17 @@ export default function ProfileLayout() {
     }}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="personal" options={{ title: t('Personal Information') }} />
-      <Stack.Screen name="security" options={{ title: t('Account Security') }} />
-      <Stack.Screen name="change-password" options={{ title: "Change Password" }} />
+      <Stack.Screen name="security" options={{ title: t("Two-factor authentication") }} />
+      <Stack.Screen name="change-email" options={{ title: t("Change Email") }} />
+      <Stack.Screen name="connected-accounts" options={{ title: t("Connected Accounts") }} />
+      <Stack.Screen name="devices" options={{ title: t("Devices & Sessions") }} />
+      <Stack.Screen name="security-activity" options={{ title: t("Security Activity") }} />
+      <Stack.Screen name="change-password" options={{ title: t("Change Password") }} />
       <Stack.Screen name="language" options={{ title: t('Language') }} />
       <Stack.Screen name="accessibility" options={{ title: t('Accessibility') }} />
       <Stack.Screen name="data" options={{ title: t('Data Management') }} />
       <Stack.Screen name="privacy" options={{ title: t('Privacy') }} />
+      <Stack.Screen name="support" options={{ title: t("Help & Support") }} />
       <Stack.Screen name="about" options={{ title: t('About') }} />
     </Stack>
   );

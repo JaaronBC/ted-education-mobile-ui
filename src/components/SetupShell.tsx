@@ -39,7 +39,7 @@ export function SetupShell({
 
       {children}
 
-      <Pressable disabled={busy} onPress={onContinue}
+      <Pressable accessibilityRole="button" accessibilityState={{disabled: Boolean(busy)}} disabled={busy} onPress={onContinue}
         style={s.button}>
         <Text style={s.buttonText}>
           {busy?'...':t(action)}
@@ -48,12 +48,12 @@ export function SetupShell({
 
       <View style={s.footer}>
         {onBack?
-          <Pressable onPress={onBack}>
+          <Pressable accessibilityRole="button" onPress={onBack}>
             <Text style={s.secondary}>{t('Back')}</Text>
           </Pressable>:<View/>}
 
         {onSkip?
-          <Pressable onPress={onSkip}>
+          <Pressable accessibilityRole="button" onPress={onSkip}>
             <Text style={s.secondary}>{t('Skip for now')}</Text>
           </Pressable>:<View/>}
       </View>

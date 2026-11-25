@@ -1,6 +1,6 @@
-import { View, ScrollView } from 'react-native';
+import { useLanguage as useLocale10 } from '@/i18n/LanguageContext';
+import { View, ScrollView , Pressable } from 'react-native';
 import { AppText as Text } from '../../components/ui/AppText';
-import { Pressable } from 'react-native';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,6 +10,8 @@ import AppIcon from '@/components/ui/app-icon';
 import { Articles } from '@/features/learn/data/Articles';
 
 export default function LearnScreen() {
+  const { tr: tr10 } = useLocale10();
+
     return (
         <View className="flex-1 bg-white">
             <StatusBar style="dark" />
@@ -21,7 +23,7 @@ export default function LearnScreen() {
                                 <View className="w-full flex-row items-center justify-between">
                                     <Pressable
                                         accessibilityRole="button"
-                                        accessibilityLabel="Back"
+                                        accessibilityLabel={tr10("Back")}
                                         onPress={() => router.back()}
                                         className="h-10 w-10 items-center justify-center"
                                     >
@@ -39,12 +41,10 @@ export default function LearnScreen() {
                                             fontWeight: '400',
                                             color: '#17395D',
                                         }}
-                                    >
-                                        Learn
-                                    </Text>
+                                    >{tr10("Learn")} </Text>
                                     <Pressable
                                         accessibilityRole="button"
-                                        accessibilityLabel="Search"
+                                        accessibilityLabel={tr10("Search")}
                                         onPress={() => router.push('/learnsearch')}
                                         className="h-10 w-10 items-center justify-center"
                                     >
@@ -59,7 +59,7 @@ export default function LearnScreen() {
                                 <MainCard
                                     background={require('../../../assets/images/maincard-image.jpg')}
                                     name={"Understanding\nThyroid Eye Disease"}
-                                    accessibilityLabel="Understanding Thyroid Eye Disease"
+                                    accessibilityLabel={tr10("Understanding Thyroid Eye Disease")}
                                     link="/whatisted"
                                 />
                                 {Articles.map((article) => (

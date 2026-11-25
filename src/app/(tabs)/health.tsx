@@ -1,16 +1,25 @@
-import { StyleSheet, ScrollView } from "react-native";
+import { useLanguage as useLocale10 } from '@/i18n/LanguageContext';
+import { StyleSheet, ScrollView, Text } from "react-native";
 import ScreenContainer from "@/components/ui/screen-container";
 import SectionHeader from "@/components/ui/section-header";
-import HealthCategoryCard from "@/components/health/health-category-card";
-import HealthSummaryCard from "@/components/health/health-summary-card";
-import { healthCategories } from "@/constants/health/health-categories";
+import HealthCategoryCard from "@/features/health/components/health-category-card";
+import HealthSummaryCard from "@/features/health/components/health-summary-card";
+import { healthCategories } from "@/features/health/constants/health-categories";
 import { theme } from "@/constants/theme";
 
 export default function HealthScreen() {
+  const { tr: tr10 } = useLocale10();
+
   return (
     <ScreenContainer>
       <ScrollView contentContainerStyle={styles.container}>
-        <SectionHeader title="My Health" BackButton />
+        <SectionHeader title={tr10("My Health")} BackButton />
+
+        <Text style={{
+          color: theme.colors.secondaryText,
+          fontSize: 13,
+          lineHeight: 20,
+        }}>{tr10("Development preview with sample health data. Do not enter real patient information.")} </Text>
 
         {healthCategories.map((category) => {
           const summary = category.summary;

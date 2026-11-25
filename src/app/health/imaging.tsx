@@ -1,8 +1,9 @@
+import { useLanguage as useLocale10 } from '@/i18n/LanguageContext';
 import { useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import ImagingReportCard from "@/components/health/imaging/imaging-report-card";
-import ImagingReportFormModal from "@/components/health/imaging/imaging-report-form-modal";
-import ImagingReportViewer from "@/components/health/imaging/imaging-report-viewer";
+import ImagingReportCard from "@/features/health/components/imaging/imaging-report-card";
+import ImagingReportFormModal from "@/features/health/components/imaging/imaging-report-form-modal";
+import ImagingReportViewer from "@/features/health/components/imaging/imaging-report-viewer";
 import AppButton from "@/components/ui/app-button";
 import AppCard from "@/components/ui/app-card";
 import ScreenContainer from "@/components/ui/screen-container";
@@ -10,11 +11,13 @@ import {
   sortImagingReports,
   type ImagingReport,
   type ImagingSortOrder,
-} from "@/constants/health/imaging-reports";
+} from "@/features/health/constants/imaging-reports";
 import { theme } from "@/constants/theme";
-import { mockImagingReports } from "@/mockdata/imaging-reports";
+import { mockImagingReports } from "@/features/health/mockdata/imaging-reports";
 
 export default function ImagingScreen() {
+  const { tr: tr10 } = useLocale10();
+
   const [reports, setReports] = useState<ImagingReport[]>(mockImagingReports);
   const [sortOrder, setSortOrder] = useState<ImagingSortOrder>("newest");
   const [sortOpen, setSortOpen] = useState(false);
@@ -80,10 +83,10 @@ export default function ImagingScreen() {
           <Text style={styles.description}>
             Store and review your imaging reports with key report details.
           </Text>
-          <AppButton title="Upload Imaging Report" onPress={openCreateModal} />
+          <AppButton title={tr10("Upload Imaging Report")} onPress={openCreateModal} />
         </View>
         <View style={styles.listHeaderRow}>
-          <Text style={styles.sectionTitle}>Imaging Reports</Text>
+          <Text style={styles.sectionTitle}>{tr10("Imaging Reports")}</Text>
 
           <View style={styles.sortControlContainer}>
             <Pressable
@@ -107,7 +110,7 @@ export default function ImagingScreen() {
                   accessibilityRole="button"
                   accessibilityState={{ selected: sortOrder === "newest" }}
                 >
-                  <Text style={styles.sortOptionText}>Newest first</Text>
+                  <Text style={styles.sortOptionText}>{tr10("Newest first")}</Text>
                 </Pressable>
                 <Pressable
                   style={styles.sortOption}
@@ -118,7 +121,7 @@ export default function ImagingScreen() {
                   accessibilityRole="button"
                   accessibilityState={{ selected: sortOrder === "oldest" }}
                 >
-                  <Text style={styles.sortOptionText}>Oldest first</Text>
+                  <Text style={styles.sortOptionText}>{tr10("Oldest first")}</Text>
                 </Pressable>
               </View>
             )}
@@ -132,7 +135,7 @@ export default function ImagingScreen() {
               Add your first imaging report to organize and review it here.
             </Text>
             <AppButton
-              title="Upload Imaging Report"
+              title={tr10("Upload Imaging Report")}
               onPress={openCreateModal}
             />
           </AppCard>

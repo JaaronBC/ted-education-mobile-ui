@@ -1,7 +1,10 @@
+import { useLanguage as useLocale12 , useLanguage as useLocale10 } from '@/i18n/LanguageContext';
+import { KeyRound, Mail, Link2, MonitorSmartphone, History, CircleHelp } from 'lucide-react-native';
 import { Fragment } from "react";
-import { Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Alert, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { AppText as Text } from "../../../components/ui/AppText";
 import { useSession } from "../../../contexts/SessionContext";
+import { sessionGeneration } from "../../../services/sessionTokens";
 import { useAccessibility } from "../../../contexts/AccessibilityContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter, type Href } from "expo-router";
@@ -9,32 +12,138 @@ import {
   Accessibility, ArrowRight, Database, Info, Languages,
   LockKeyhole, ShieldCheck, UserRound, type LucideIcon,
 } from "lucide-react-native";
-import SettingsRow from "../../../components/profile/SettingsRow";
-import ProfileAvatarThumb from "../../../components/profile/ProfileAvatarThumb";
+import SettingsRow from "../../../features/profile/components/SettingsRow";
+import ProfileAvatarThumb from "../../../features/profile/components/ProfileAvatarThumb";
 import { theme } from "../../../constants/theme";
 
 const C = theme.colors;
 
-type Setting = { title: string; description: string; icon: LucideIcon; href: Href };
-const SECTIONS: { title: string; items: Setting[] }[] = [
-  { title: "YOUR DETAILS", items: [
-    { title: "Personal Information", description: "Name, email and optional details", icon: UserRound, href: "/profile/personal" },
-  ] },
-  { title: "ACCOUNT SECURITY", items: [
-    { title: "Two-factor authentication", description: "Authenticator and recovery codes", icon: LockKeyhole, href: "/profile/security" },
-  ] },
-  { title: "PREFERENCES", items: [
-    { title: "Language", description: "Choose your preferred language", icon: Languages, href: "/profile/language" },
-    { title: "Accessibility", description: "Text size and display options", icon: Accessibility, href: "/profile/accessibility" },
-  ] },
-  { title: "PRIVACY & SUPPORT", items: [
-    { title: "Data Management", description: "Manage your app data", icon: Database, href: "/profile/data" },
-    { title: "Privacy", description: "How your information is handled", icon: ShieldCheck, href: "/profile/privacy" },
-    { title: "About", description: "About TED Education", icon: Info, href: "/profile/about" },
-  ] },
+
+type Setting = {
+  title: string;
+  description: string;
+  icon: LucideIcon;
+  href: Href;
+  requiresAccount?: boolean;
+};
+
+const SECTIONS: {
+  title: string;
+  items: Setting[];
+}[] = [
+  {
+    title: 'YOUR DETAILS',
+    items: [
+      {
+        title: 'Personal Information',
+        description: 'Name, email and profile details',
+        icon: UserRound,
+        href: '/profile/personal',
+        requiresAccount: true,
+      },
+    ],
+  },
+  {
+    title: 'ACCOUNT SECURITY',
+    items: [
+      {
+        title: 'Change Password',
+        description: 'Manage your account password',
+        icon: KeyRound,
+        href: '/profile/change-password',
+        requiresAccount: true,
+      },
+      {
+        title: 'Change Email',
+        description: 'Update your verified email',
+        icon: Mail,
+        href: '/profile/change-email' as Href,
+        requiresAccount: true,
+      },
+      {
+        title: 'Two-factor authentication',
+        description: 'Authenticator and recovery codes',
+        icon: LockKeyhole,
+        href: '/profile/security',
+        requiresAccount: true,
+      },
+      {
+        title: 'Connected Accounts',
+        description: 'Manage Google sign-in',
+        icon: Link2,
+        href: '/profile/connected-accounts' as Href,
+        requiresAccount: true,
+      },
+      {
+        title: 'Devices & Sessions',
+        description: 'Manage active sign-in sessions',
+        icon: MonitorSmartphone,
+        href: '/profile/devices' as Href,
+        requiresAccount: true,
+      },
+      {
+        title: 'Security Activity',
+        description: 'Review recent security events',
+        icon: History,
+        href: '/profile/security-activity' as Href,
+        requiresAccount: true,
+      },
+    ],
+  },
+  {
+    title: 'PREFERENCES',
+    items: [
+      {
+        title: 'Language',
+        description: 'Choose your preferred language',
+        icon: Languages,
+        href: '/profile/language',
+      },
+      {
+        title: 'Accessibility',
+        description: 'Text size and display options',
+        icon: Accessibility,
+        href: '/profile/accessibility',
+      },
+    ],
+  },
+  {
+    title: 'PRIVACY & SUPPORT',
+    items: [
+      {
+        title: 'Data Management',
+        description: 'Export or delete your account data',
+        icon: Database,
+        href: '/profile/data',
+        requiresAccount: true,
+      },
+      {
+        title: 'Privacy',
+        description: 'How your information is handled',
+        icon: ShieldCheck,
+        href: '/profile/privacy',
+      },
+      {
+        title: 'Help & Support',
+        description: 'Account help and common questions',
+        icon: CircleHelp,
+        href: '/profile/support' as Href,
+      },
+      {
+        title: 'About',
+        description: 'About TED Education',
+        icon: Info,
+        href: '/profile/about',
+      },
+    ],
+  },
 ];
 
 export default function ProfileScreen() {
+  const { t: t12 } = useLocale12();
+
+  const { tr: tr10 } = useLocale10();
+
   const router = useRouter();
   const { role, user, signOut } = useSession();
   const { highContrast } = useAccessibility();
@@ -43,20 +152,20 @@ export default function ProfileScreen() {
     <SafeAreaView edges={["top"]} style={[styles.screen, highContrast && { backgroundColor: "#FFFFFF" }]}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.brandRule} />
-        <Text style={styles.eyebrow}>YOUR TED EXPERIENCE</Text>
-        <Text style={styles.heading}>My Profile</Text>
-        <Text style={styles.subtitle}>A personal space for your health journey.</Text>
+        <Text style={styles.eyebrow}>{tr10("YOUR TED EXPERIENCE")}</Text>
+        <Text style={styles.heading}>{tr10("My Profile")}</Text>
+        <Text style={styles.subtitle}>{tr10("A personal space for your health journey.")}</Text>
 
         <Pressable
           style={styles.identityCard}
           onPress={() => router.push(anonymous ? "/(auth)/login" : "/profile/personal")}
           accessibilityRole="button"
-          accessibilityLabel={anonymous ? "Guest profile, sign in to manage your account" : "Open personal information"}
+          accessibilityLabel={anonymous ? tr10("Guest profile, sign in to manage your account") : tr10("Open personal information")}
         >
           <ProfileAvatarThumb userId={anonymous ? undefined : user?.id} />
           <View style={styles.identityText}>
-            <Text style={styles.identityName}>{anonymous ? "Guest" : (user?.fullName ?? "My account")}</Text>
-            <View style={styles.guestBadge}><View style={styles.guestDot} /><Text style={styles.guestText}>{anonymous ? "Browsing without an account" : "Signed in"}</Text></View>
+            <Text style={styles.identityName}>{anonymous ? tr10("Guest") : (user?.fullName ?? "My account")}</Text>
+            <View style={styles.guestBadge}><View style={styles.guestDot} /><Text style={styles.guestText}>{anonymous ? tr10("Browsing without an account") : tr10("Signed in")}</Text></View>
           </View>
           <ArrowRight size={21} color={C.primaryBlue} />
         </Pressable>
@@ -64,21 +173,21 @@ export default function ProfileScreen() {
         {anonymous && <View style={styles.accountCard}>
           <View style={styles.accountIcon}><LockKeyhole size={21} color={C.darkBlue} /></View>
           <View style={styles.accountCopy}>
-            <Text style={styles.accountHeading}>Save your account details</Text>
+            <Text style={styles.accountHeading}>{tr10("Save your account details")}</Text>
             <Text style={styles.accountDescription}>Explore TED without signing in. Sign in to manage your account information. Account features require server authentication.</Text>
           </View>
-          <Pressable style={styles.signInButton} onPress={() => router.push("/(auth)/login")} accessibilityRole="button" accessibilityLabel="Sign in to your account">
-            <Text style={styles.signInText}>Sign in</Text><ArrowRight size={17} color="#FFFFFF" />
+          <Pressable style={styles.signInButton} onPress={() => router.push("/(auth)/login")} accessibilityRole="button" accessibilityLabel={tr10("Sign in to your account")}>
+            <Text style={styles.signInText}>{tr10("Sign in")}</Text><ArrowRight size={17} color="#FFFFFF" />
           </Pressable>
         </View>}
 
         {SECTIONS.map((section) => (
           <View key={section.title} style={styles.section}>
-            <Text style={styles.sectionTitle}>{section.title}</Text>
+            <Text style={styles.sectionTitle}>{t12(section.title)}</Text>
             <View style={styles.sectionCard}>
               {section.items.map((item, i) => (
                 <Fragment key={item.title}>
-                  <SettingsRow icon={item.icon} title={item.title} description={item.description} onPress={() => router.push(anonymous && (item.title === "Personal Information" || item.title === "Two-factor authentication") ? "/(auth)/login" : item.href)} />
+                  <SettingsRow icon={item.icon} title={item.title} description={item.description} onPress={() => router.push(anonymous && item.requiresAccount ? "/(auth)/login" : item.href)} />
                   {i !== section.items.length - 1 && <View style={styles.separator} />}
                 </Fragment>
               ))}
@@ -89,10 +198,38 @@ export default function ProfileScreen() {
         {!anonymous && (
           <Pressable
             style={styles.signInButton}
-            onPress={() => { void signOut().then(()=>router.replace('/welcome')); }}
+            onPress={() => {
+  const requestedEpoch = sessionGeneration();
+
+  void signOut()
+    .then(({ remoteRevoked, epoch }) => {
+      if (epoch !== sessionGeneration()) {
+        return;
+      }
+
+      router.replace('/welcome');
+
+      if (!remoteRevoked) {
+        Alert.alert(
+          t12("Signed out locally"),
+          t12("Server session revocation could not be confirmed. You can revoke all sessions after signing in again."),
+        );
+      }
+    })
+    .catch(() => {
+      if (sessionGeneration() > requestedEpoch + 1) {
+        return;
+      }
+
+      Alert.alert(
+        t12("Sign-out incomplete"),
+        t12("Your local session could not be fully cleared. Please try again."),
+      );
+    });
+}}
             accessibilityRole="button"
           >
-            <Text style={styles.signInText}>Sign out</Text>
+            <Text style={styles.signInText}>{tr10("Sign out")}</Text>
           </Pressable>
         )}
       </ScrollView>

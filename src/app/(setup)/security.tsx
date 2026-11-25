@@ -1,3 +1,4 @@
+import { useLanguage as useLocale12 , useLanguage as useLocale10 , useLanguage } from '@/i18n/LanguageContext';
 import { useState } from 'react';
 import { Redirect,useRouter } from 'expo-router';
 import {
@@ -6,9 +7,12 @@ import {
 import { AppText as Text } from '../../components/ui/AppText';
 import { SetupShell } from '../../components/SetupShell';
 import { useSession } from '../../contexts/SessionContext';
-import { useLanguage } from '../../i18n/LanguageContext';
 
 export default function SetupSecurity(){
+  const { t: t12 } = useLocale12();
+
+  const { tr: tr10 } = useLocale10();
+
   const router=useRouter();
   const {user,updateAccountProfile}=useSession();
   const {t}=useLanguage();
@@ -35,9 +39,9 @@ export default function SetupSecurity(){
   };
 
   return <SetupShell step={3}
-    title="Protect your account"
-    subtitle="Authenticator 2FA is optional. You can enable it now or later."
-    action="Finish"
+    title={tr10("Protect your account")}
+    subtitle={t12("Authenticator 2FA is optional. You can enable it now or later.")}
+    action={tr10("Finish")}
     busy={busy}
     onContinue={()=>{void finish();}}
     onSkip={()=>{void finish();}}
@@ -51,7 +55,7 @@ export default function SetupSecurity(){
         a 6-digit code when signing in.
       </Text>
 
-      <Pressable style={s.action}
+      <Pressable accessibilityRole="button" style={s.action}
         onPress={()=>router.push('/profile/security')}>
         <Text style={s.actionText}>
           {t('Set up Authenticator')}
@@ -64,7 +68,7 @@ export default function SetupSecurity(){
       then complete setup.
     </Text>
 
-    {error?<Text style={s.error}>{error}</Text>:null}
+    {error?<Text style={s.error}>{t12(error)}</Text>:null}
   </SetupShell>;
 }
 

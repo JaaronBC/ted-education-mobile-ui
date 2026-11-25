@@ -1,10 +1,11 @@
+import { useLanguage as useLocale10 } from '@/i18n/LanguageContext';
 import { useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import MedicationCard from "@/components/health/medications/medication-card";
-import MedicationDoseCard from "@/components/health/medications/medication-dose-card";
-import MedicationFormModal from "@/components/health/medications/medication-form-modal";
-import MedicationHistory from "@/components/health/medications/medication-history";
-import MedicationLogModal from "@/components/health/medications/medication-log-modal";
+import MedicationCard from "@/features/health/components/medications/medication-card";
+import MedicationDoseCard from "@/features/health/components/medications/medication-dose-card";
+import MedicationFormModal from "@/features/health/components/medications/medication-form-modal";
+import MedicationHistory from "@/features/health/components/medications/medication-history";
+import MedicationLogModal from "@/features/health/components/medications/medication-log-modal";
 import AppButton from "@/components/ui/app-button";
 import AppCard from "@/components/ui/app-card";
 import ScreenContainer from "@/components/ui/screen-container";
@@ -12,23 +13,25 @@ import {
   medicationDefinitions,
   type MedicationLog,
   type PatientMedication,
-} from "@/constants/health/medications";
+} from "@/features/health/constants/medications";
 import { theme } from "@/constants/theme";
 import {
   mockMedicationLogs,
   mockPatientMedications,
-} from "@/mockdata/medications";
+} from "@/features/health/mockdata/medications";
 import {
   getCandidateOccurrencesForMedicationDate,
   getScheduledOccurrencesForDate,
   getTodayOverview,
   hasLogForOccurrence,
   toLocalDateKey,
-} from "@/utils/health/medication-schedule";
+} from "@/features/health/utils/medication-schedule";
 
 type MedicationsView = "today" | "my-medications" | "history";
 
 export default function MedicationsScreen() {
+  const { tr: tr10 } = useLocale10();
+
   const [medications, setMedications] = useState<PatientMedication[]>(
     mockPatientMedications,
   );
@@ -186,11 +189,11 @@ export default function MedicationsScreen() {
           <Text style={styles.description}>
             Manage medications, track doses, and configure reminders.
           </Text>
-          <AppButton title="Add Medication" onPress={openCreateMedication} />
+          <AppButton title={tr10("Add Medication")} onPress={openCreateMedication} />
         </View>
 
         <AppCard style={styles.overviewCard}>
-          <Text style={styles.sectionTitle}>Medication Overview</Text>
+          <Text style={styles.sectionTitle}>{tr10("Medication Overview")}</Text>
           <Text
             style={styles.overviewText}
           >{`Active medications: ${overview.activeMedicationCount}`}</Text>
@@ -296,7 +299,7 @@ export default function MedicationsScreen() {
                   Add a medication to start tracking doses.
                 </Text>
                 <AppButton
-                  title="Add Medication"
+                  title={tr10("Add Medication")}
                   onPress={openCreateMedication}
                 />
               </AppCard>

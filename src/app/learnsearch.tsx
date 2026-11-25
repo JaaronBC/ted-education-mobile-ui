@@ -1,6 +1,8 @@
+import { AccessibleInput } from '@/components/ui/AccessibleInput';
+import { useLanguage as useLocale10 } from '@/i18n/LanguageContext';
 import '../../global.css';
 import { useState } from 'react';
-import { View, ScrollView, Pressable, TextInput, Text } from 'react-native';
+import { View, ScrollView, Pressable, Text } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LearnCard from '@/features/learn/learncard';
@@ -9,6 +11,8 @@ import AppIcon from '@/components/ui/app-icon';
 import { Articles } from '@/features/learn/data/Articles';
 
 export default function LearnSearchScreen() {
+  const { tr: tr10 } = useLocale10();
+
   const [searchQuery, setSearchQuery] = useState('');
   const [submittedQuery, setSubmittedQuery] = useState('');
   const words = submittedQuery.toLowerCase().split(" ").filter(Boolean);
@@ -24,7 +28,7 @@ export default function LearnSearchScreen() {
                 <View className="w-full flex-row items-center">
                   <Pressable
                     accessibilityRole="button"
-                    accessibilityLabel="Back"
+                    accessibilityLabel={tr10("Back")}
                     onPress={() => router.back()}
                     className="h-10 w-8 items-center justify-center"
                   >
@@ -35,8 +39,8 @@ export default function LearnSearchScreen() {
                       strokeWidth={2}
                     />
                   </Pressable>
-                  <TextInput
-                    placeholder="Press Enter To Search"
+                  <AccessibleInput labelKey="Search"
+                    placeholder={tr10("Press Enter To Search")}
                     placeholderTextColor='#1F2933'
                     clearButtonMode="always"
                     autoCapitalize='none'
@@ -81,9 +85,7 @@ export default function LearnSearchScreen() {
                               style={{
                                 color: 'red'
                               }}
-                            >
-                              No Results Found
-                            </Text>
+                            >{tr10("No Results Found")} </Text>
                           </View>
                         ))}
                   </View>

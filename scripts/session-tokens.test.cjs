@@ -164,8 +164,11 @@ test('cancelled login cannot leave committed credentials', async () => {
 
   const { api, storage } = loadTokens(
     undefined,
-    async key => {
-      if (key === 'ted_refresh_token') {
+    async (key, value) => {
+      if (
+        key === 'ted_session_v1' &&
+        JSON.parse(value).accessToken
+      ) {
         started.resolve();
         await pending.promise;
       }
@@ -194,7 +197,15 @@ test('cancelled login cannot leave committed credentials', async () => {
 
   await rejection;
 
-  assert.equal(storage.size, 0);
+  assert.equal(storage.size, 1);
+
+  const persisted = JSON.parse(
+    storage.get('ted_session_v1')
+  );
+
+  assert.equal(persisted.signedOut, true);
+  assert.equal(persisted.accessToken, undefined);
+  assert.equal(persisted.refreshToken, undefined);
   assert.equal(await api.getValidAccessToken(), null);
 });
 
@@ -279,7 +290,15 @@ test('logout clears stored credentials', async () => {
 
   await api.clearSessionTokens();
 
-  assert.equal(storage.size, 0);
+  assert.equal(storage.size, 1);
+
+  const persisted = JSON.parse(
+    storage.get('ted_session_v1')
+  );
+
+  assert.equal(persisted.signedOut, true);
+  assert.equal(persisted.accessToken, undefined);
+  assert.equal(persisted.refreshToken, undefined);
   assert.equal(await api.getValidAccessToken(), null);
   assert.ok(api.sessionGeneration() > epoch);
 });

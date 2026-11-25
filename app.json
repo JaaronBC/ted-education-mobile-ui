@@ -21,6 +21,12 @@
       "typedRoutes": true,
       "reactCompiler": true
     },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "360f707e-06b9-49f5-999f-fce820aff6de"
+      }
+    },
     "plugins": [
       "expo-router",
       [
@@ -38,12 +44,6 @@
           "iosUrlScheme": "com.googleusercontent.apps.839211012526-qkq6pi3687nusk9i55rd3dmemd89h9dj"
         }
       ]
-    ],
-    "extra": {
-      "router": {},
-      "eas": {
-        "projectId": "360f707e-06b9-49f5-999f-fce820aff6de"
-      }
-    }
+    ]
   }
 }

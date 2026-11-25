@@ -1,3 +1,4 @@
+import { useLanguage as useLocale10 } from '@/i18n/LanguageContext';
 import { View, ScrollView } from 'react-native';
 import { AppText as Text } from '../../components/ui/AppText';
 import { StatusBar } from 'expo-status-bar';
@@ -5,6 +6,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import HomeFeatureCard from '../../components/HomeFeatureCard';
 
 export default function HomeScreen() {
+  const { tr: tr10 } = useLocale10();
+
 return (
   <View className="flex-1 bg-white">
     <StatusBar style="dark" />
@@ -18,49 +21,45 @@ return (
                   fontFamily: 'Georgia',
                   fontWeight: '500',
                 }}
-              >
-                Welcome
-              </Text>
+              >{tr10("Welcome")} </Text>
               <Text className="text-left text-[18px] leading-[25px] text-[#618FA7]"
                 style={{
                   fontFamily: 'Georgia',
                   fontWeight: '200',
                 }}
-              >
-                Learn. Track. Organize. Understand. {'\n'}Take control of your eye health.
-              </Text>
+              >{tr10("Learn. Track. Organize. Understand.")} {'\n'}{tr10("Take control of your eye health.")} </Text>
               <HomeFeatureCard
                 icon="HomeLearn"
                 name="Learn"
-                accessibilityLabel="Learn"
+                accessibilityLabel={tr10("Learn")}
                 description="Helpful education & resources to guide you in understanding TED."
                 link="/(tabs)/learn"
               />
               <HomeFeatureCard
                 icon="HomeTrack"
                 name="Track"
-                accessibilityLabel="Track"
+                accessibilityLabel={tr10("Track")}
                 description="Track symptoms, CAS assessments and photos."
                 link="/(tabs)/track"
               />
               <HomeFeatureCard
                 icon="HomeHealth"
                 name="My Health"
-                accessibilityLabel="My Health"
+                accessibilityLabel={tr10("My Health")}
                 description="Organize labs, medications, imaging, treatment history, and health records."
                 link="/(tabs)/health"
               />
               <HomeFeatureCard
                 icon="HomeShare"
                 name="Share With My Doctor"
-                accessibilityLabel="Share With My Doctor"
+                accessibilityLabel={tr10("Share With My Doctor")}
                 description="Prepare health information to share with your doctor."
                 link="/share"
               />
               <HomeFeatureCard
                 icon="Treatment"
                 name="Treatment"
-                accessibilityLabel="Treatment"
+                accessibilityLabel={tr10("Treatment")}
                 description="Find treatments and other guidance for TED."
                 link="/treatment"
               />

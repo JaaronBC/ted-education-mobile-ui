@@ -1,12 +1,17 @@
+import { AccessibleInput } from '@/components/ui/AccessibleInput';
+import { useLanguage as useLocale12 , useLanguage as useLocale10 , useLanguage } from '@/i18n/LanguageContext';
 import { useState } from 'react';
-import { StyleSheet,TextInput } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Redirect,useRouter } from 'expo-router';
 import { AppText as Text } from '../../components/ui/AppText';
 import { SetupShell } from '../../components/SetupShell';
 import { useSession } from '../../contexts/SessionContext';
-import { useLanguage } from '../../i18n/LanguageContext';
 
 export default function SetupProfile(){
+  const { t: t12 } = useLocale12();
+
+  const { tr: tr10 } = useLocale10();
+
   const router=useRouter();
   const {user,updateAccountProfile}=useSession();
   const {t}=useLanguage();
@@ -43,7 +48,7 @@ export default function SetupProfile(){
   };
 
   return <SetupShell step={1}
-    title="Your name"
+    title={tr10("Your name")}
     subtitle="Tell us what to call you. Your name is the only required profile detail."
     busy={busy}
     onContinue={()=>{void next();}}
@@ -51,7 +56,7 @@ export default function SetupProfile(){
 
     <Text style={s.label}>{t('Full name')} *</Text>
 
-    <TextInput
+    <AccessibleInput labelKey="Full name"
       value={name}
       onChangeText={setName}
       autoCapitalize="words"
@@ -61,7 +66,7 @@ export default function SetupProfile(){
       style={s.input}
     />
 
-    {error?<Text style={s.error}>{error}</Text>:null}
+    {error?<Text style={s.error}>{t12(error)}</Text>:null}
   </SetupShell>;
 }
 

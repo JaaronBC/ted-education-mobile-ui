@@ -1,4 +1,4 @@
-import { Pressable, Text, View, Image, ImageSourcePropType, ImageBackground, StyleSheet} from 'react-native';
+import { Pressable, Text, View, ImageSourcePropType, ImageBackground, StyleSheet } from 'react-native';
 import { router, Href } from 'expo-router';
 import AppIcon from '@/components/ui/app-icon';
 

@@ -1,5 +1,5 @@
+import { Alert as LanguageAlert , Pressable,ScrollView,StyleSheet } from 'react-native';
 import { router } from 'expo-router';
-import { Pressable,ScrollView,StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppText as Text } from '../../components/ui/AppText';
 import { LANGUAGES,useLanguage } from '../../i18n/LanguageContext';
@@ -9,7 +9,7 @@ export default function LanguageScreen(){
 
   return <SafeAreaView style={s.page}>
     <ScrollView contentContainerStyle={s.content}>
-      <Pressable onPress={()=>router.back()} style={s.back}>
+      <Pressable accessibilityRole="button" onPress={()=>router.back()} style={s.back}>
         <Text style={s.link}>‹ {t('Back')}</Text>
       </Pressable>
 
@@ -22,14 +22,19 @@ export default function LanguageScreen(){
         <Pressable key={l.code}
           accessibilityRole="radio"
           accessibilityState={{checked:l.code===language}}
-          onPress={()=>{void setLanguage(l.code);}}
+          onPress={()=>{void setLanguage(l.code).catch(() => {
+      LanguageAlert.alert(
+        t('Error'),
+        t('Could not save language preference.'),
+      );
+    });}}
           style={[s.choice,l.code===language&&s.selected]}>
           <Text style={s.choiceText}>{l.name}</Text>
           {l.code===language?<Text style={s.check}>✓</Text>:null}
         </Pressable>
       )}
 
-      <Pressable style={s.button}
+      <Pressable accessibilityRole="button" style={s.button}
         onPress={()=>router.replace('/welcome')}>
         <Text style={s.buttonText}>{t('Continue')}</Text>
       </Pressable>

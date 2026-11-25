@@ -1,10 +1,11 @@
+import { useLanguage as useLocale10 } from '@/i18n/LanguageContext';
 import { useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import LabHistoryCard from "@/components/health/labs/lab-history-card";
-import LabMeasurementSelector from "@/components/health/labs/lab-measurement-selector";
-import LabResultRow from "@/components/health/labs/lab-result-row";
-import LabReviewModal from "@/components/health/labs/lab-review-modal";
-import LabTrendCard from "@/components/health/labs/lab-trend-card";
+import LabHistoryCard from "@/features/health/components/labs/lab-history-card";
+import LabMeasurementSelector from "@/features/health/components/labs/lab-measurement-selector";
+import LabResultRow from "@/features/health/components/labs/lab-result-row";
+import LabReviewModal from "@/features/health/components/labs/lab-review-modal";
+import LabTrendCard from "@/features/health/components/labs/lab-trend-card";
 import AppButton from "@/components/ui/app-button";
 import AppCard from "@/components/ui/app-card";
 import ScreenContainer from "@/components/ui/screen-container";
@@ -15,13 +16,15 @@ import {
   sortReportsByCollectionDate,
   type LabMeasurementId,
   type LabReport,
-} from "@/constants/health/lab-measurements";
+} from "@/features/health/constants/lab-measurements";
 import { theme } from "@/constants/theme";
-import { mockLabReports, mockReviewDraft } from "@/mockdata/lab-reports";
+import { mockLabReports, mockReviewDraft } from "@/features/health/mockdata/lab-reports";
 
 type LabsView = "trends" | "history";
 
 export default function LabsScreen() {
+  const { tr: tr10 } = useLocale10();
+
   const [reports, setReports] = useState<LabReport[]>(mockLabReports);
   const [view, setView] = useState<LabsView>("trends");
   const [selectedMeasurementId, setSelectedMeasurementId] =
@@ -73,7 +76,7 @@ export default function LabsScreen() {
             Track and compare thyroid-related laboratory results across your
             reports.
           </Text>
-          <AppButton title="Upload Lab Report" onPress={openMockReview} />
+          <AppButton title={tr10("Review Sample Lab Report")} onPress={openMockReview} />
         </View>
         <View style={styles.toggleRow}>
           <Pressable
@@ -89,9 +92,7 @@ export default function LabsScreen() {
                 styles.toggleText,
                 view === "trends" && styles.toggleTextActive,
               ]}
-            >
-              Lab Trends
-            </Text>
+            >{tr10("Lab Trends")} </Text>
           </Pressable>
           <Pressable
             style={[
@@ -106,9 +107,7 @@ export default function LabsScreen() {
                 styles.toggleText,
                 view === "history" && styles.toggleTextActive,
               ]}
-            >
-              Lab History
-            </Text>
+            >{tr10("Lab History")} </Text>
           </Pressable>
         </View>
 
@@ -127,7 +126,7 @@ export default function LabsScreen() {
             />
 
             <AppCard style={styles.latestResultsCard}>
-              <Text style={styles.sectionTitle}>Latest Lab Results</Text>
+              <Text style={styles.sectionTitle}>{tr10("Latest Lab Results")}</Text>
               <Text style={styles.caption}>
                 From {mostRecentDate}. Tap a row to update the trend graph.
               </Text>

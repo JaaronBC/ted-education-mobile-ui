@@ -55,7 +55,16 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "postinstall": "node scripts/fix-query-string-interop.cjs"
   },
-  "private": true
+  "private": true,
+  "overrides": {
+    "@expo/fingerprint@0.20.17": {
+      "minimatch": "11.0.9"
+    },
+    "query-string@7.1.3": {
+      "decode-uri-component": "0.5.1"
+    }
+  }
 }

@@ -1,4 +1,5 @@
-import SocialLoginButtons from '../../components/profile/SocialLoginButtons';
+import { useLanguage as useLocale12 , useLanguage as useLocale10 , useLanguage } from '@/i18n/LanguageContext';
+import SocialLoginButtons from '../../features/auth/components/SocialLoginButtons';
 import { useSession } from '../../contexts/SessionContext';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
@@ -7,12 +8,15 @@ import { useRouter } from 'expo-router';
 import { ArrowLeft, ArrowRight, Eye, EyeOff, LockKeyhole, Mail } from 'lucide-react-native';
 import { AppText as Text } from '../../components/ui/AppText';
 import { useAccessibility } from '../../contexts/AccessibilityContext';
-import { useLanguage } from '../../i18n/LanguageContext';
 import { theme } from '../../constants/theme';
 import { ApiError } from '../../services/apiClient';
 
 const C = theme.colors;
 export default function LoginScreen() {
+  const { t: t12 } = useLocale12();
+
+  const { tr: tr10 } = useLocale10();
+
   const router = useRouter();
   const { fontScale } = useAccessibility();
   const {t}=useLanguage();
@@ -49,23 +53,23 @@ export default function LoginScreen() {
   return (
     <SafeAreaView style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Pressable accessibilityRole="button" accessibilityLabel="Back" style={styles.back} onPress={() => router.back()}><ArrowLeft size={24} color={C.darkBlue} /></Pressable>
+        <Pressable accessibilityRole="button" accessibilityLabel={tr10("Back")} style={styles.back} onPress={() => router.back()}><ArrowLeft size={24} color={C.darkBlue} /></Pressable>
         <View style={styles.symbol}><LockKeyhole size={32} color={C.darkBlue} /></View>
         <Text style={styles.eyebrow}>TED EDUCATION</Text>
-        <Text style={styles.heading}>Sign in</Text>
+        <Text style={styles.heading}>{tr10("Sign in")}</Text>
         <Text style={styles.subtitle}>Access your account and manage your personal details.</Text>
         <View style={styles.card}>
-          <Text style={styles.label}>Email address</Text>
-          <View style={styles.inputRow}><Mail size={19} color={C.primaryBlue} /><TextInput style={[styles.input, { fontSize: 15 * fontScale }]} value={email} onChangeText={(v) => {setEmail(v);setError('');}} keyboardType="email-address" placeholder="name@example.com" placeholderTextColor="#80909E" autoCapitalize="none" autoComplete="email" accessibilityLabel="Email address" /></View>
-          <Text style={[styles.label, { marginTop: 19 }]}>Password</Text>
-          <View style={styles.inputRow}><LockKeyhole size={19} color={C.primaryBlue} /><TextInput style={[styles.input, { fontSize: 15 * fontScale }]} value={password} onChangeText={(v) => {setPassword(v);setError('');}} secureTextEntry={!showPassword} placeholder={t('Password')} placeholderTextColor="#80909E" autoComplete="current-password" accessibilityLabel="Password" /><Pressable accessibilityRole="button" accessibilityLabel={showPassword ? 'Hide password' : 'Show password'} onPress={() => setShowPassword(!showPassword)}>{showPassword ? <EyeOff size={18} color={C.darkBlue}/> : <Eye size={18} color={C.darkBlue}/>}</Pressable></View>
-          {error ? <Text style={styles.error} accessibilityRole="alert">{error}</Text> : null}
-          <Pressable style={styles.forgot} accessibilityRole="link" onPress={() => router.push('/(auth)/forgot-password')}><Text style={styles.link}>Forgot password?</Text></Pressable>
-          <Pressable style={styles.button} accessibilityRole="button" onPress={submit} disabled={busy}><Text style={styles.buttonText}>{busy ? 'Signing in...' : 'Sign in'}</Text><ArrowRight size={18} color="#FFFFFF"/></Pressable>
+          <Text style={styles.label}>{tr10("Email address")}</Text>
+          <View style={styles.inputRow}><Mail size={19} color={C.primaryBlue} /><TextInput style={[styles.input, { fontSize: 15 * fontScale }]} value={email} onChangeText={(v) => {setEmail(v);setError('');}} keyboardType="email-address" placeholder="name@example.com" placeholderTextColor="#80909E" autoCapitalize="none" autoComplete="email" accessibilityLabel={tr10("Email address")} /></View>
+          <Text style={[styles.label, { marginTop: 19 }]}>{tr10("Password")}</Text>
+          <View style={styles.inputRow}><LockKeyhole size={19} color={C.primaryBlue} /><TextInput style={[styles.input, { fontSize: 15 * fontScale }]} value={password} onChangeText={(v) => {setPassword(v);setError('');}} secureTextEntry={!showPassword} placeholder={t('Password')} placeholderTextColor="#80909E" autoComplete="current-password" accessibilityLabel={tr10("Password")} /><Pressable accessibilityRole="button" accessibilityLabel={showPassword ? tr10("Hide password") : tr10("Show password")} onPress={() => setShowPassword(!showPassword)}>{showPassword ? <EyeOff size={18} color={C.darkBlue}/> : <Eye size={18} color={C.darkBlue}/>}</Pressable></View>
+          {error ? <Text style={styles.error} accessibilityRole="alert">{t12(error)}</Text> : null}
+          <Pressable style={styles.forgot} accessibilityRole="link" onPress={() => router.push('/(auth)/forgot-password')}><Text style={styles.link}>{tr10("Forgot password?")}</Text></Pressable>
+          <Pressable style={styles.button} accessibilityRole="button" onPress={submit} disabled={busy}><Text style={styles.buttonText}>{busy ? tr10("Signing in...") : tr10("Sign in")}</Text><ArrowRight size={18} color="#FFFFFF"/></Pressable>
         </View>
         <SocialLoginButtons mode="login" />
-        <View style={styles.newAccount}><Text style={styles.detail}>Don&apos;t have an account? </Text><Pressable accessibilityRole="link" onPress={() => router.push('/(auth)/register')}><Text style={styles.link}>Create account</Text></Pressable></View>
-        <Pressable style={styles.guest} onPress={() => router.replace('/(tabs)/profile')} accessibilityRole="button"><Text style={styles.link}>Continue without signing in</Text></Pressable>
+        <View style={styles.newAccount}><Text style={styles.detail}>{tr10("Don't have an account?")} </Text><Pressable accessibilityRole="link" onPress={() => router.push('/(auth)/register')}><Text style={styles.link}>{tr10("Create account")}</Text></Pressable></View>
+        <Pressable style={styles.guest} onPress={() => router.replace('/(tabs)/profile')} accessibilityRole="button"><Text style={styles.link}>{tr10("Continue without signing in")}</Text></Pressable>
         
       </ScrollView>
     </SafeAreaView>
@@ -93,5 +97,3 @@ const styles = StyleSheet.create({
   guest: { minHeight: 48, marginTop: 14, alignItems: 'center', justifyContent: 'center' },
   safety: { color: C.secondaryText, fontSize: 12, lineHeight: 19, textAlign: 'center', marginTop: 24 },
 });
-
-

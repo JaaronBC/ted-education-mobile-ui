@@ -1,3 +1,4 @@
+import { useLanguage as useLocale12 , useLanguage as useLocale10 } from '@/i18n/LanguageContext';
 import { useState } from 'react';
 import {
   Pressable,
@@ -19,6 +20,10 @@ import { theme } from '../../constants/theme';
 const C = theme.colors;
 
 export default function VerifyEmailScreen() {
+  const { t: t12 } = useLocale12();
+
+  const { tr: tr10 } = useLocale10();
+
   const router = useRouter();
   const { fontScale } = useAccessibility();
 
@@ -110,7 +115,7 @@ export default function VerifyEmailScreen() {
       >
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel="Back to Sign In"
+          accessibilityLabel={tr10("Back to Sign In")}
           style={styles.back}
           onPress={() => router.replace('/(auth)/login')}
         >
@@ -121,17 +126,12 @@ export default function VerifyEmailScreen() {
           <MailCheck size={32} color={C.darkBlue} />
         </View>
 
-        <Text style={styles.title}>
-          Verify your email
-        </Text>
+        <Text style={styles.title}>{tr10("Verify your email")} </Text>
 
-        <Text style={styles.subtitle}>
-          Enter the 8-digit code from your email.
-          It expires after 10 minutes.
-        </Text>
+        <Text style={styles.subtitle}>{tr10("Enter the 8-digit code from your email. It expires after 10 minutes.")} </Text>
 
         <View style={styles.card}>
-          <Text style={styles.label}>Email address</Text>
+          <Text style={styles.label}>{tr10("Email address")}</Text>
 
           <TextInput
             style={[styles.input, { fontSize: 15 * fontScale }]}
@@ -141,10 +141,10 @@ export default function VerifyEmailScreen() {
             autoCapitalize="none"
             autoComplete="email"
             placeholder="name@example.com"
-            accessibilityLabel="Email address"
+            accessibilityLabel={tr10("Email address")}
           />
 
-          <Text style={styles.label}>Verification code</Text>
+          <Text style={styles.label}>{tr10("Verification code")}</Text>
 
           <TextInput
             style={[
@@ -158,12 +158,12 @@ export default function VerifyEmailScreen() {
             maxLength={8}
             autoComplete="one-time-code"
             placeholder="12345678"
-            accessibilityLabel="8-digit verification code"
+            accessibilityLabel={tr10("8-digit verification code")}
           />
 
           {error ? (
             <Text style={styles.error} accessibilityRole="alert">
-              {error}
+              {t12(error)}
             </Text>
           ) : null}
 
@@ -180,7 +180,7 @@ export default function VerifyEmailScreen() {
             onPress={() => { void verify(); }}
           >
             <Text style={styles.buttonText}>
-              {busy ? 'Please wait...' : 'Verify Email'}
+              {busy ? tr10("Please wait...") : tr10("Verify Email")}
             </Text>
           </Pressable>
 
@@ -190,7 +190,7 @@ export default function VerifyEmailScreen() {
             accessibilityRole="button"
             onPress={() => { void resend(); }}
           >
-            <Text style={styles.link}>Resend Code</Text>
+            <Text style={styles.link}>{tr10("Resend Code")}</Text>
           </Pressable>
         </View>
       </ScrollView>

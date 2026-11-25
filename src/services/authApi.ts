@@ -86,12 +86,17 @@ export const authApi = {
   changePassword: (
     token: string,
     currentPassword: string,
-    newPassword: string
+    newPassword: string,
+    mfaCode?: string,
   ) =>
     apiRequest<{ message: string }>('/auth/change-password', {
       method: 'POST',
       token,
-      body: { currentPassword, newPassword },
+      body: {
+        currentPassword,
+        newPassword,
+        ...(mfaCode ? { mfaCode } : {}),
+      },
     }),
 
   forgotPassword: (email: string) =>

@@ -1,9 +1,12 @@
+import { useLanguage as useLocale10 } from '@/i18n/LanguageContext';
 import { AppText } from "../../../components/ui/AppText";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Eye } from "lucide-react-native";
 
 export default function AboutScreen() {
+  const { tr: tr10 } = useLocale10();
+
   return (
     <SafeAreaView
       edges={["bottom"]}
@@ -35,9 +38,7 @@ export default function AboutScreen() {
           </View>
         </View>
 
-        <AppText className="mb-3 mt-5 text-[12px] font-semibold tracking-widest text-[#718096]">
-          ABOUT THIS APP
-        </AppText>
+        <AppText className="mb-3 mt-5 text-[12px] font-semibold tracking-widest text-[#718096]">{tr10("ABOUT THIS APP")} </AppText>
 
         <View className="rounded-2xl bg-white p-5">
           <AppText className="text-[15px] leading-6 text-[#526478]">
@@ -51,9 +52,7 @@ export default function AboutScreen() {
           </AppText>
         </View>
 
-        <AppText className="mb-3 mt-7 text-[12px] font-semibold tracking-widest text-[#718096]">
-          MEDICAL DISCLAIMER
-        </AppText>
+        <AppText className="mb-3 mt-7 text-[12px] font-semibold tracking-widest text-[#718096]">{tr10("MEDICAL DISCLAIMER")} </AppText>
 
         <View className="rounded-2xl bg-white p-5">
           <AppText className="text-[14px] leading-6 text-[#526478]">
@@ -67,9 +66,7 @@ export default function AboutScreen() {
           </AppText>
         </View>
 
-        <AppText className="mt-7 text-center text-[12px] text-[#94A3B8]">
-          For education, not clinical diagnosis
-        </AppText>
+        <AppText className="mt-7 text-center text-[12px] text-[#94A3B8]">{tr10("For education, not clinical diagnosis")} </AppText>
       </ScrollView>
     </SafeAreaView>
   );

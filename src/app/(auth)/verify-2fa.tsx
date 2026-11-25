@@ -1,3 +1,4 @@
+import { useLanguage as useLocale12 , useLanguage as useLocale10 } from '@/i18n/LanguageContext';
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -7,6 +8,10 @@ import { useSession } from '../../contexts/SessionContext';
 import { theme } from '../../constants/theme';
 const C = theme.colors;
 export default function Verify2FAScreen() {
+  const { t: t12 } = useLocale12();
+
+  const { tr: tr10 } = useLocale10();
+
   const router = useRouter();
   const { pendingMfa, completeMfa, cancelMfa } = useSession();
   const [code, setCode] = useState('');
@@ -25,14 +30,14 @@ export default function Verify2FAScreen() {
   return (
     <SafeAreaView style={styles.page}>
       <View style={styles.panel}>
-        <Text style={styles.title}>Two-factor verification</Text>
-        <Text style={styles.body}>Open your Authenticator app and enter its 6-digit code. You can also enter a saved recovery code.</Text>
-        <TextInput value={code} onChangeText={setCode} autoCapitalize="characters" autoCorrect={false} style={styles.input} placeholder="6-digit code or recovery code" accessibilityLabel="Authenticator or recovery code" />
-        {error ? <Text style={styles.error}>{error}</Text> : null}
-        <Pressable style={styles.button} disabled={busy || !pendingMfa} onPress={() => { void verify(); }}>
-          {busy ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Verify and sign in</Text>}
+        <Text style={styles.title}>{tr10("Two-factor verification")}</Text>
+        <Text style={styles.body}>{t12("Open your Authenticator app and enter its 6-digit code. You can also enter a saved recovery code.")}</Text>
+        <TextInput value={code} onChangeText={setCode} autoCapitalize="characters" autoCorrect={false} style={styles.input} placeholder={tr10("6-digit code or recovery code")} accessibilityLabel={tr10("Authenticator or recovery code")} />
+        {error ? <Text style={styles.error}>{t12(error)}</Text> : null}
+        <Pressable accessibilityRole="button" accessibilityState={{disabled: Boolean(busy || !pendingMfa)}} style={styles.button} disabled={busy || !pendingMfa} onPress={() => { void verify(); }}>
+          {busy ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>{tr10("Verify and sign in")}</Text>}
         </Pressable>
-        <Pressable onPress={() => { cancelMfa(); router.replace('/(auth)/login'); }}>
+        <Pressable accessibilityRole="button" onPress={() => { cancelMfa(); router.replace('/(auth)/login'); }}>
           <Text style={styles.link}>Cancel and return to sign in</Text>
         </Pressable>
       </View>

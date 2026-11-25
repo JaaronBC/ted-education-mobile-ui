@@ -1,7 +1,17 @@
-import { View, Text, Pressable, StyleSheet } from "react-native";
-import { router, type Href } from "expo-router";
-import AppIcon from "@/components/ui/app-icon";
-import { theme } from "@/constants/theme";
+
+import {
+  View,
+  Pressable,
+  StyleSheet,
+} from 'react-native';
+
+import { router, type Href } from 'expo-router';
+
+import AppIcon from '@/components/ui/app-icon';
+import { AppText } from '@/components/ui/AppText';
+import { theme } from '@/constants/theme';
+import { useAccessibility } from '@/contexts/AccessibilityContext';
+import { useLanguage } from '@/i18n/LanguageContext';
 
 type SectionHeaderProps = {
   title: string;
@@ -9,63 +19,87 @@ type SectionHeaderProps = {
   onBackPress?: () => void;
   backRoute?: Href;
 };
-// Optional backbutton for navigation, with
-// customizable behavior. If no onBackPress is provided, it will navigate
-// to the backRoute if specified, or go back in the navigation stack.
+
 export default function SectionHeader({
   title,
   BackButton = false,
   onBackPress,
   backRoute,
 }: SectionHeaderProps) {
+  const { highContrast } = useAccessibility();
+  const { t } = useLanguage();
+
   return (
     <View style={styles.container}>
       {BackButton && (
         <Pressable
           onPress={
             onBackPress ??
-            (() => (backRoute ? router.push(backRoute) : router.back()))
+            (() =>
+              backRoute
+                ? router.push(backRoute)
+                : router.back())
           }
           accessibilityRole="button"
-          accessibilityLabel="Go back"
-          hitSlop={8}
+          accessibilityLabel={t('Go back')}
           style={styles.backButton}
         >
           <AppIcon
             icon="back"
-            size={24}
-            color={theme.colors.darkBlue}
+            size={25}
+            color={
+              highContrast
+                ? '#141414'
+                : theme.colors.darkBlue
+            }
             strokeWidth={2}
           />
         </Pressable>
       )}
 
-      <Text style={styles.title}>{title}</Text>
+      <AppText
+        accessibilityRole="header"
+        style={styles.title}
+      >
+        {t(title)}
+      </AppText>
+
+      {BackButton && (
+        <View
+          style={styles.spacer}
+          accessibilityElementsHidden
+          importantForAccessibility="no"
+        />
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    minHeight: 44,
-    justifyContent: "center",
-    alignItems: "center",
-    position: "relative",
+    minHeight: 48,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
   },
+
   backButton: {
-    position: "absolute",
-    left: 0,
-    top: 0,
-    minWidth: 44,
-    minHeight: 44,
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 1,
+    width: 48,
+    minHeight: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
+
+  spacer: {
+    width: 48,
+  },
+
   title: {
     ...theme.typography.title,
     color: theme.colors.primaryText,
-    textAlign: "center",
-    flexShrink: 1,
+    textAlign: 'center',
+    flex: 1,
+    minWidth: 0,
   },
 });

@@ -1,5 +1,5 @@
 import { AppText } from "./AppText";
-import { Pressable, StyleSheet, Text } from "react-native";
+import { Pressable, StyleSheet } from "react-native";
 import { theme } from "@/constants/theme";
 
 type AppButtonProps = {
@@ -45,9 +45,9 @@ export default function AppButton({
 
 const styles = StyleSheet.create({
   button: {
-    minHeight: 44,
-    minWidth: 44,
-    backgroundColor: theme.colors.primaryBlue,
+    minHeight: 48,
+    minWidth: 48,
+    backgroundColor: theme.colors.darkBlue,
     paddingVertical: theme.spacing.md,
     paddingHorizontal: theme.spacing.lg,
     borderRadius: theme.borderRadius.full,
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
   },
 
   secondaryText: {
-    color: theme.colors.background,
+    color: theme.colors.primaryText,
   },
 
   disabledText: {

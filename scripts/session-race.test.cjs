@@ -47,6 +47,9 @@ function loadClient(fetchMock) {
       if (name === './sessionTokens') {
         return sessionTokens;
       }
+      if (name === 'react-native') {
+        return { Platform: { OS: 'android' } };
+      }
       throw new Error('Unexpected import: ' + name);
     },
     process: {

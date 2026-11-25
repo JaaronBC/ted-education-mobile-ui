@@ -1,15 +1,19 @@
-import { useState } from 'react';
-import { Redirect,useRouter } from 'expo-router';
-import {
+import { useLanguage as useLocale12 , useLanguage as useLocale10 , useLanguage,LANGUAGES } from '@/i18n/LanguageContext';
+import { Alert as LanguageAlert ,
   Pressable,Switch,View,StyleSheet
 } from 'react-native';
+import { useState } from 'react';
+import { Redirect,useRouter } from 'expo-router';
 import { AppText as Text } from '../../components/ui/AppText';
 import { SetupShell } from '../../components/SetupShell';
 import { useSession } from '../../contexts/SessionContext';
-import { useLanguage,LANGUAGES } from '../../i18n/LanguageContext';
 import { useAccessibility } from '../../contexts/AccessibilityContext';
 
 export default function SetupPreferences(){
+  const { t: t12 } = useLocale12();
+
+  const { tr: tr10 } = useLocale10();
+
   const router=useRouter();
   const {user,updateAccountProfile}=useSession();
   const {language,setLanguage,t}=useLanguage();
@@ -43,7 +47,7 @@ export default function SetupPreferences(){
   };
 
   return <SetupShell step={2}
-    title="Make TED yours"
+    title={tr10("Make TED yours")}
     subtitle="Choose your preferred language and reading settings."
     busy={busy}
     onContinue={()=>{void next();}}
@@ -55,7 +59,12 @@ export default function SetupPreferences(){
     <View style={s.languages}>
       {LANGUAGES.map(x=>
         <Pressable key={x.code}
-          onPress={()=>{void setLanguage(x.code);}}
+          onPress={()=>{void setLanguage(x.code).catch(() => {
+      LanguageAlert.alert(
+        t('Error'),
+        t('Could not save language preference.'),
+      );
+    });}}
           style={[s.lang,x.code===language&&s.active]}
           accessibilityRole="radio"
           accessibilityState={{checked:x.code===language}}>
@@ -70,7 +79,7 @@ export default function SetupPreferences(){
 
     <View style={s.row}>
       {[1,1.25,1.5].map(value=>
-        <Pressable key={value}
+        <Pressable accessibilityRole="radio" accessibilityState={{checked: fontScale === value}} key={value}
           onPress={()=>setFontScale(value)}
           style={[
             s.scale,
@@ -91,7 +100,7 @@ export default function SetupPreferences(){
         onValueChange={setHighContrast}/>
     </View>
 
-    {error?<Text style={s.error}>{error}</Text>:null}
+    {error?<Text style={s.error}>{t12(error)}</Text>:null}
   </SetupShell>;
 }
 
