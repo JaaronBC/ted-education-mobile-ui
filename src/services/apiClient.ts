@@ -1,6 +1,13 @@
-import { getValidAccessToken, refreshAccessToken, storedAccessToken } from './sessionTokens';
+import {
+  getValidAccessToken,
+  refreshAccessToken,
+  storedAccessToken,
+  sessionGeneration,
+} from './sessionTokens';
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL?.trim().replace(/\/+$/, '');
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL
+  ?.trim()
+  .replace(/\/+$/, '');
 
 export class ApiError extends Error {
   constructor(
@@ -9,6 +16,13 @@ export class ApiError extends Error {
   ) {
     super(message);
     this.name = 'ApiError';
+  }
+}
+
+export class SessionChangedError extends Error {
+  constructor() {
+    super('Session changed. Please try again.');
+    this.name = 'SessionChangedError';
   }
 }
 
@@ -23,46 +37,81 @@ export async function apiRequest<T>(
   options: RequestOptions = {},
 ): Promise<T> {
   if (!BASE_URL) {
-    throw new Error('EXPO_PUBLIC_API_URL is not configured.');
+    throw new Error(
+      'EXPO_PUBLIC_API_URL is not configured.',
+    );
   }
 
   if (!path.startsWith('/')) {
-    throw new Error('API paths must start with /.');
+    throw new Error(
+      'API paths must start with /.',
+    );
+  }
+
+  const epoch = sessionGeneration();
+  const authenticated = Boolean(options.token);
+
+  function assertCurrentSession() {
+    if (
+      authenticated &&
+      epoch !== sessionGeneration()
+    ) {
+      throw new SessionChangedError();
+    }
   }
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 12000);
+  const timeout = setTimeout(
+    () => controller.abort(),
+    12000,
+  );
 
   try {
     let token = options.token;
 
     const mayRefresh = Boolean(
-      token && token === await storedAccessToken()
+      token &&
+      token === await storedAccessToken()
     );
 
+    assertCurrentSession();
+
     if (mayRefresh) {
-      token = (await getValidAccessToken()) ?? token;
+      token =
+        (await getValidAccessToken()) ?? token;
+
+      assertCurrentSession();
     }
 
-    const send = (authToken?: string) =>
-      fetch(`${BASE_URL}${path}`, {
-      method: options.method ?? 'GET',
-      headers: {
-        Accept: 'application/json',
-        ...(options.body === undefined
-          ? {}
-          : { 'Content-Type': 'application/json' }),
-        ...(authToken
-          ? { Authorization: `Bearer ${authToken}` }
-          : {}),
-      },
-      body: options.body === undefined
-        ? undefined
-        : JSON.stringify(options.body),
-      signal: controller.signal,
-    });
+    const send = (authToken?: string) => {
+      assertCurrentSession();
+
+      return fetch(`${BASE_URL}${path}`, {
+        method: options.method ?? 'GET',
+        headers: {
+          Accept: 'application/json',
+          ...(options.body === undefined
+            ? {}
+            : {
+                'Content-Type': 'application/json',
+              }),
+          ...(authToken
+            ? {
+                Authorization: `Bearer ${authToken}`,
+              }
+            : {}),
+        },
+        body:
+          options.body === undefined
+            ? undefined
+            : JSON.stringify(options.body),
+        signal: controller.signal,
+      });
+    };
 
     let response = await send(token);
+
+    assertCurrentSession();
 
     if (
       response.status === 401 &&
@@ -71,11 +120,21 @@ export async function apiRequest<T>(
       !path.startsWith('/auth/refresh') &&
       !path.startsWith('/auth/logout')
     ) {
+      assertCurrentSession();
+
       const next = await refreshAccessToken();
+
+      assertCurrentSession();
+
       response = await send(next);
+
+      assertCurrentSession();
     }
 
     const raw = await response.text();
+
+    assertCurrentSession();
+
     let data: unknown = null;
 
     if (raw) {
@@ -87,27 +146,48 @@ export async function apiRequest<T>(
     }
 
     if (!response.ok) {
-      let message = `Request failed (HTTP ${response.status}).`;
+      let message =
+        `Request failed (HTTP ${response.status}).`;
 
-      if (typeof data === 'object' && data !== null &&
-          'message' in data) {
-        const detail = (data as { message?: unknown }).message;
+      if (
+        typeof data === 'object' &&
+        data !== null &&
+        'message' in data
+      ) {
+        const detail = (
+          data as { message?: unknown }
+        ).message;
 
         if (typeof detail === 'string') {
           message = detail;
         } else if (Array.isArray(detail)) {
-          message = detail.filter(
-            (v) => typeof v === 'string',
-          ).join('; ') || message;
+          message =
+            detail
+              .filter(
+                (v) => typeof v === 'string',
+              )
+              .join('; ') || message;
         }
       }
 
-      throw new ApiError(response.status, message);
+      throw new ApiError(
+        response.status,
+        message,
+      );
     }
 
     return data as T;
   } catch (error) {
-    if (error instanceof ApiError) throw error;
+    if (error instanceof SessionChangedError) {
+      throw error;
+    }
+
+    assertCurrentSession();
+
+    if (error instanceof ApiError) {
+      throw error;
+    }
+
     if (controller.signal.aborted) {
       throw new Error('Request timed out.');
     }

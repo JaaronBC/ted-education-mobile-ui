@@ -17,7 +17,7 @@ const BASE = process.env.EXPO_PUBLIC_API_URL
 let generation = 0;
 let terminating = false;
 
-let refreshing: Promise<string> | null = null;
+let refreshing: { epoch: number; task: Promise<string> } | null = null;
 let queued: Promise<void> = Promise.resolve();
 
 export function sessionGeneration() {
@@ -27,6 +27,7 @@ export function sessionGeneration() {
 export function beginSessionTermination() {
   generation++;
   terminating = true;
+  return generation;
 }
 
 function serialize<T>(
@@ -43,7 +44,7 @@ function serialize<T>(
 }
 
 export async function clearSessionTokens() {
-  generation++;
+  const epoch = ++generation;
   terminating = true;
 
   await serialize(async () => {
@@ -52,7 +53,85 @@ export async function clearSessionTokens() {
     await SecureStore.deleteItemAsync(EXPIRY);
   });
 
-  terminating = false;
+  if (epoch === generation) {
+    terminating = false;
+  }
+}
+
+export function establishSession(
+  value: StoredSession,
+  expectedEpoch: number,
+  assertAttempt: () => void,
+): Promise<{ epoch: number; expiry: number }> {
+  assertAttempt();
+
+  if (expectedEpoch !== generation || terminating) {
+    throw new Error('Session changed.');
+  }
+
+  if (
+    !value.accessToken ||
+    !value.refreshToken ||
+    !Number.isFinite(value.expiresIn) ||
+    value.expiresIn <= 0
+  ) {
+    throw new Error('Incomplete login session.');
+  }
+
+  const epoch = ++generation;
+  terminating = true;
+
+  const expiry =
+    Date.now() + value.expiresIn * 1000;
+
+  return serialize(async () => {
+    function assertCommit() {
+      if (epoch !== generation) {
+        throw new Error('Session changed.');
+      }
+
+      assertAttempt();
+    }
+
+    try {
+      assertCommit();
+
+      await SecureStore.setItemAsync(
+        REFRESH,
+        value.refreshToken,
+      );
+
+      assertCommit();
+
+      await SecureStore.setItemAsync(
+        ACCESS,
+        value.accessToken,
+      );
+
+      assertCommit();
+
+      await SecureStore.setItemAsync(
+        EXPIRY,
+        String(expiry),
+      );
+
+      assertCommit();
+
+      terminating = false;
+
+      return { epoch, expiry };
+    } catch (error) {
+      if (epoch === generation) {
+        await SecureStore.deleteItemAsync(ACCESS);
+        await SecureStore.deleteItemAsync(REFRESH);
+        await SecureStore.deleteItemAsync(EXPIRY);
+
+        terminating = false;
+      }
+
+      throw error;
+    }
+  });
 }
 
 export async function storeSession(
@@ -117,11 +196,11 @@ export async function refreshAccessToken():
     throw new Error('Session is signing out.');
   }
 
-  if (refreshing) {
-    return refreshing;
-  }
-
   const epoch = generation;
+
+  if (refreshing?.epoch === epoch) {
+    return refreshing.task;
+  }
 
   const task = (async () => {
     if (!BASE) {
@@ -201,12 +280,12 @@ export async function refreshAccessToken():
     }
   })();
 
-  refreshing = task;
+  refreshing = { epoch, task };
 
   try {
     return await task;
   } finally {
-    if (refreshing === task) {
+    if (refreshing?.task === task) {
       refreshing = null;
     }
   }

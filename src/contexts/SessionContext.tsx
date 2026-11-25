@@ -3,6 +3,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useRef,
   useState,
   type PropsWithChildren,
 } from 'react';
@@ -20,7 +21,7 @@ import {
   clearSessionTokens,
   getValidAccessToken,
   sessionGeneration,
-  storeSession,
+  establishSession,
   storedAccessExpiry,
   storedAccessToken,
 } from '../services/sessionTokens';
@@ -90,6 +91,20 @@ export function SessionProvider({
     useState<string | null>(null);
 
   const [loading, setLoading] = useState(true);
+  const renderedSessionGeneration = sessionGeneration();
+  const loginAttempt = useRef(0);
+
+  function assertLoginAttempt(
+    epoch: number,
+    attempt: number,
+  ) {
+    if (
+      epoch !== sessionGeneration() ||
+      attempt !== loginAttempt.current
+    ) {
+      throw new Error('Login attempt is no longer active.');
+    }
+  }
 
   async function restore() {
     const epoch = sessionGeneration();
@@ -109,8 +124,12 @@ export function SessionProvider({
 
       if (epoch !== sessionGeneration()) return;
 
+      const expiry = await storedAccessExpiry();
+
+      if (epoch !== sessionGeneration()) return;
+
       setUser(account);
-      setExpiresAt(await storedAccessExpiry());
+      setExpiresAt(expiry);
     } catch (error) {
       if (epoch !== sessionGeneration()) {
         // A rejected refresh may have cleared credentials.
@@ -164,8 +183,14 @@ export function SessionProvider({
           return;
         }
 
+        const expiry = await storedAccessExpiry();
+
+        if (!active || epoch !== sessionGeneration()) {
+          return;
+        }
+
         setUser(account);
-        setExpiresAt(await storedAccessExpiry());
+        setExpiresAt(expiry);
       } catch (error) {
         if (
           active &&
@@ -222,25 +247,41 @@ export function SessionProvider({
 
   async function applyLoginResult(
     result: FullSession,
+    epoch: number,
+    attempt: number,
   ): Promise<Account> {
-    const epoch = sessionGeneration();
+    assertLoginAttempt(epoch, attempt);
 
     const account = await authApi.me(
       result.accessToken,
     );
 
-    if (epoch !== sessionGeneration()) {
-      throw new Error('Session changed.');
-    }
+    assertLoginAttempt(epoch, attempt);
 
-    const expiry = await storeSession(result);
+    const pending = establishSession(
+      result,
+      epoch,
+      () => {
+        if (attempt !== loginAttempt.current) {
+          throw new Error(
+            'Login attempt is no longer active.',
+          );
+        }
+      },
+    );
 
-    if (epoch !== sessionGeneration()) {
-      throw new Error('Session changed.');
-    }
+    setUser(null);
+    setExpiresAt(null);
+
+    const committed = await pending;
+
+    assertLoginAttempt(
+      committed.epoch,
+      attempt,
+    );
 
     setUser(account);
-    setExpiresAt(expiry);
+    setExpiresAt(committed.expiry);
     setPendingChallenge(null);
 
     return account;
@@ -250,6 +291,8 @@ export function SessionProvider({
     result: Awaited<
       ReturnType<typeof authApi.login>
     >,
+    epoch: number,
+    attempt: number,
   ): Promise<
     'mfa' | 'onboarding' | 'authenticated'
   > {
@@ -262,7 +305,7 @@ export function SessionProvider({
     }
 
     const account =
-      await applyLoginResult(result);
+      await applyLoginResult(result, epoch, attempt);
 
     return account.onboardingCompletedAt
       ? 'authenticated'
@@ -273,21 +316,35 @@ export function SessionProvider({
     email: string,
     password: string,
   ) {
+    const epoch = sessionGeneration();
+    const attempt = ++loginAttempt.current;
+
+    setPendingChallenge(null);
+
     const result = await authApi.login(
       email.trim().toLowerCase(),
       password,
     );
 
-    return handleFirstFactor(result);
+    assertLoginAttempt(epoch, attempt);
+
+    return handleFirstFactor(result, epoch, attempt);
   }
 
   async function loginWithGoogleToken(
     idToken: string,
   ) {
+    const epoch = sessionGeneration();
+    const attempt = ++loginAttempt.current;
+
+    setPendingChallenge(null);
+
     const result =
       await authApi.googleLogin(idToken);
 
-    return handleFirstFactor(result);
+    assertLoginAttempt(epoch, attempt);
+
+    return handleFirstFactor(result, epoch, attempt);
   }
 
   async function completeMfa(code: string) {
@@ -297,13 +354,18 @@ export function SessionProvider({
       );
     }
 
+    const epoch = sessionGeneration();
+    const attempt = ++loginAttempt.current;
+
     const result = await authApi.mfaVerify(
       pendingChallenge,
       code,
     );
 
+    assertLoginAttempt(epoch, attempt);
+
     const account =
-      await applyLoginResult(result);
+      await applyLoginResult(result, epoch, attempt);
 
     return account.onboardingCompletedAt
       ? 'authenticated'
@@ -312,11 +374,32 @@ export function SessionProvider({
 
   async function updateAccountProfile(
     body: ProfileUpdate,
-  ) {
+  ): Promise<Account> {
+    const epoch = renderedSessionGeneration;
+    const accountId = user?.id;
+
+    function assertCurrentSession() {
+      if (epoch !== sessionGeneration()) {
+        throw new Error(
+          'Session changed. Please try again.',
+        );
+      }
+    }
+
+    assertCurrentSession();
+
+    if (!accountId) {
+      throw new Error(
+        'Sign in to save your profile.',
+      );
+    }
+
     const token = await getToken();
 
+    assertCurrentSession();
+
     if (!token) {
-      throw Error(
+      throw new Error(
         'Sign in to save your profile.',
       );
     }
@@ -324,11 +407,30 @@ export function SessionProvider({
     const next =
       await authApi.updateProfile(token, body);
 
-    setUser(next);
+    assertCurrentSession();
+
+    if (next.id !== accountId) {
+      throw new Error(
+        'Account mismatch. Please sign in again.',
+      );
+    }
+
+    setUser(current => {
+      if (
+        epoch !== sessionGeneration() ||
+        current?.id !== accountId
+      ) {
+        return current;
+      }
+
+      return next;
+    });
+
     return next;
   }
 
   function cancelMfa() {
+    loginAttempt.current++;
     setPendingChallenge(null);
   }
 
@@ -345,10 +447,19 @@ export function SessionProvider({
   }
 
   async function signOut() {
+    if (
+      renderedSessionGeneration !==
+      sessionGeneration()
+    ) {
+      return;
+    }
+
+    loginAttempt.current++;
+
     const accessPending =
       getToken().catch(() => null);
 
-    beginSessionTermination();
+    const epoch = beginSessionTermination();
 
     setUser(null);
     setExpiresAt(null);
@@ -363,19 +474,34 @@ export function SessionProvider({
         throw new Error('No valid access token.');
       }
 
+      if (epoch !== sessionGeneration()) {
+        return;
+      }
+
       await authApi.logout(access);
     } catch {
       console.warn(
         'Remote sign-out could not be confirmed.',
       );
     } finally {
-      await clearSessionTokens();
+      if (epoch === sessionGeneration()) {
+        await clearSessionTokens();
+      }
     }
   }
 
   async function signOutAll() {
-    // Confirm server revocation before clearing local credentials.
+    const epoch = renderedSessionGeneration;
+
+    if (epoch !== sessionGeneration()) {
+      throw new Error('Session changed.');
+    }
+
     const access = await getToken();
+
+    if (epoch !== sessionGeneration()) {
+      throw new Error('Session changed.');
+    }
 
     if (!access) {
       throw new Error('Cannot verify your session. Sign in again and retry.');
@@ -383,6 +509,11 @@ export function SessionProvider({
 
     await authApi.logoutAll(access);
 
+    if (epoch !== sessionGeneration()) {
+      throw new Error('Session changed.');
+    }
+
+    loginAttempt.current++;
     beginSessionTermination();
     setUser(null);
     setExpiresAt(null);
@@ -412,7 +543,14 @@ export function SessionProvider({
         cancelMfa,
         getToken,
         replaceSession: async value => {
-          await applyLoginResult(value);
+          const epoch = renderedSessionGeneration;
+          const attempt = ++loginAttempt.current;
+
+          await applyLoginResult(
+            value,
+            epoch,
+            attempt,
+          );
         },
         updateAccountProfile,
         signOut,

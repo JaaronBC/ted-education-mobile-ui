@@ -22,17 +22,21 @@ export default function SecurityScreen() {
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const accountId = user?.id;
+
   useEffect(() => {
     let active = true;
 
-    if (!user) return;
-
-    setMfaStatus('loading');
-    setStatusError('');
+    if (!accountId) return;
 
     void (async () => {
       try {
         const token = await getToken();
+
+        if (!active) return;
+
+        setMfaStatus('loading');
+        setStatusError('');
 
         if (!token) {
           throw new Error('Sign in again');
@@ -62,7 +66,7 @@ export default function SecurityScreen() {
     return () => {
       active = false;
     };
-  }, [user?.id, getToken, statusReload]);
+  }, [accountId, getToken, statusReload]);
 
   async function beginSetup() {
     setBusy(true); setError('');
